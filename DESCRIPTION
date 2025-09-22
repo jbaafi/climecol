@@ -1,8 +1,11 @@
 Package: climecol
-Title: What the Package Does (One Line, Title Case)
+Title: Climate and Weather Data Tools for Ecological Modeling
 Version: 0.0.0.9000
 Authors@R: 
-    person("Joseph", "Baafi", , "jbaafi@mun.ca", role = c("aut", "cre"))
+    person(given = "Joseph", family = "Baafi",
+           email = "jbaafi@mun.ca",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-4613-0313"))
 Description: Provides functions for archiving, cleaning, analyzing, and 
     visualizing weather and climate data with applications to ecological 
     and infectious disease modeling. Includes utilities for preparing data, 
@@ -13,7 +16,15 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
-LazyData: true
+Imports:
+    ggplot2,
+    dplyr,
+    tidyr,
+    lubridate,
+    rlang
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
+LazyData: true

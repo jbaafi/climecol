@@ -7,7 +7,7 @@
 plot_rainfall(df)
 }
 \arguments{
-\item{df}{A data frame with at least two columns:
+\item{df}{A data frame with columns:
 \describe{
 \item{Date}{Date of observation (Date or character convertible to Date)}
 \item{Rain_mm}{Daily rainfall total in millimeters (numeric)}
