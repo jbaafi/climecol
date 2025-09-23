@@ -1,0 +1,69 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# climecol
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+## Overview
+
+`climecol` provides tools for archiving, cleaning, analyzing, and visualizing weather and climate data for ecological and infectious-disease modeling.
+It ships curated daily weather data and simple helpers for quick plotting and analysis.
+
+## Installation
+
+You can install the development version of `climecol` from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("jbaafi/climecol")
+```
+
+(Alternatively: `pak::pak("jbaafi/climecol")`.)
+
+## Example
+
+Load the package and explore the included Newfoundland dataset (2008–2023):
+
+```{r example}
+library(climecol)
+
+# Load dataset
+data(weather_nl)
+
+# Peek at structure
+dplyr::glimpse(weather_nl)
+
+```
+
+Plot daily rainfall:
+
+```{r rainfall-plot, message=FALSE, warning=FALSE}
+plot_rainfall(weather_nl)
+```
+
+> This figure was generated when knitting this README.  
+
+
+## Contributing
+
+Issues and pull requests are welcome via the repo’s [issue tracker](https://github.com/jbaafi/climecol/issues).
+
+## License
+
+MIT © Joseph Baafi
+
