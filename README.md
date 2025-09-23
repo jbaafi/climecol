@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/jbaafi/climecol/graph/badge.svg)](https://app.codecov.io/gh/jbaafi/climecol)
 <!-- badges: end -->
 
 ## Overview
@@ -68,6 +70,11 @@ plot_rainfall(weather_nl)
 
 Issues and pull requests are welcome via the repo’s [issue
 tracker](https://github.com/jbaafi/climecol/issues).
+
+## Contact
+
+If you’re interested in discussing collaborations or have questions
+about `climecol`, email me at <jbaafi@mun.ca>.
 
 ## License
 
