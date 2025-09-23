@@ -28,3 +28,5 @@ Suggests:
     rmarkdown
 Config/testthat/edition: 3
 LazyData: true
+URL: https://github.com/jbaafi/climecol
+BugReports: https://github.com/jbaafi/climecol/issues
