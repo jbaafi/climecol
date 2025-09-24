@@ -13,6 +13,16 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r}
+if (requireNamespace("pkgload", quietly = TRUE)) {
+  pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
+} else {
+  # Fallback if pkgload isn't available: try an installed version
+  suppressMessages(require(climecol, quietly = TRUE, character.only = TRUE))
+}
+```
+
+
 # climecol
 
 <!-- badges: start -->
@@ -35,6 +45,58 @@ devtools::install_github("jbaafi/climecol")
 ```
 
 (Alternatively: `pak::pak("jbaafi/climecol")`.)
+
+## Photoperiod (daylength)
+
+The package includes fast, dependency-free photoperiod helpers based on a standard solar-geometry approximation (Forsythe et al., 1995). These return **hours of daylight** from date and latitude only—ideal as a smooth seasonal driver for ecological models.
+
+### Functions
+
+- `daylength_f95(date, lat)` → numeric vector of daylight hours
+
+- `photoperiod_year(year, lat = NULL, location = NULL, aggregate = c("none","month"))`  
+  - Supply either `lat` **or** a built-in `location` key  
+  - `aggregate = "month"` returns monthly means (12 rows)
+
+- `photoperiod_sites()` → named vector of built-in locations and latitudes  
+  *(keys are matched case-insensitively; punctuation/spacing ignored)*
+
+Quick examples
+
+```{r}
+library(climecol)
+
+# Daily photoperiod for 2024 at St. John's (NL) via location
+pp_nl <- photoperiod_year(2024, location = "St John's")
+head(pp_nl)
+
+# Monthly mean photoperiod at 47.56°N
+photoperiod_year(2024, lat = 47.56, aggregate = "month")
+
+# Saint John (NB) vs St. John's (NL) — distinct cities
+photoperiod_year(2024, location = "Saint John", aggregate = "month")
+photoperiod_year(2024, location = "St John's", aggregate = "month")
+
+# List built-in sites
+photoperiod_sites()
+
+```
+
+A simple plot of daylength over the year:
+
+```{r}
+plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
+     xlab = "Date", ylab = "Daylength (hours)",
+     main = "Photoperiod at St. John's, NL (2024)")
+
+```
+
+### Notes
+
+- Inputs like `"St John's"`, `"st_johns"`, and `"St.Johns"` all resolve to the same NL site (`st_johns`).
+- `"Saint John"` / `"st john"` resolves to NB (`saint_john`).
+- If you pass `lat` (no `location`), the output is labeled as `lat_<value>`.
+
 
 ## Example
 

@@ -1,6 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+``` r
+if (requireNamespace("pkgload", quietly = TRUE)) {
+  pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
+} else {
+  # Fallback if pkgload isn't available: try an installed version
+  suppressMessages(require(climecol, quietly = TRUE, character.only = TRUE))
+}
+#> ℹ Loading climecol
+```
+
 # climecol
 
 <!-- badges: start -->
@@ -28,6 +38,112 @@ devtools::install_github("jbaafi/climecol")
 ```
 
 (Alternatively: `pak::pak("jbaafi/climecol")`.)
+
+## Photoperiod (daylength)
+
+The package includes fast, dependency-free photoperiod helpers based on
+a standard solar-geometry approximation (Forsythe et al., 1995). These
+return **hours of daylight** from date and latitude only—ideal as a
+smooth seasonal driver for ecological models.
+
+### Functions
+
+- `daylength_f95(date, lat)` → numeric vector of daylight hours
+
+- `photoperiod_year(year, lat = NULL, location = NULL, aggregate = c("none","month"))`
+
+  - Supply either `lat` **or** a built-in `location` key  
+  - `aggregate = "month"` returns monthly means (12 rows)
+
+- `photoperiod_sites()` → named vector of built-in locations and
+  latitudes  
+  *(keys are matched case-insensitively; punctuation/spacing ignored)*
+
+Quick examples
+
+``` r
+library(climecol)
+
+# Daily photoperiod for 2024 at St. John's (NL) via location
+pp_nl <- photoperiod_year(2024, location = "St John's")
+head(pp_nl)
+#>         date daylength_hours   lat location
+#> 1 2024-01-01        8.517220 47.56 st_johns
+#> 2 2024-01-02        8.532937 47.56 st_johns
+#> 3 2024-01-03        8.549903 47.56 st_johns
+#> 4 2024-01-04        8.568104 47.56 st_johns
+#> 5 2024-01-05        8.587527 47.56 st_johns
+#> 6 2024-01-06        8.608155 47.56 st_johns
+
+# Monthly mean photoperiod at 47.56°N
+photoperiod_year(2024, lat = 47.56, aggregate = "month")
+#>          date daylength_hours   lat  location
+#> 1  2024-01-01        8.916550 47.56 lat_47.56
+#> 2  2024-02-01       10.207203 47.56 lat_47.56
+#> 3  2024-03-01       11.887952 47.56 lat_47.56
+#> 4  2024-04-01       13.652182 47.56 lat_47.56
+#> 5  2024-05-01       15.161088 47.56 lat_47.56
+#> 6  2024-06-01       15.912512 47.56 lat_47.56
+#> 7  2024-07-01       15.487501 47.56 lat_47.56
+#> 8  2024-08-01       14.115072 47.56 lat_47.56
+#> 9  2024-09-01       12.384641 47.56 lat_47.56
+#> 10 2024-10-01       10.635663 47.56 lat_47.56
+#> 11 2024-11-01        9.175674 47.56 lat_47.56
+#> 12 2024-12-01        8.490440 47.56 lat_47.56
+
+# Saint John (NB) vs St. John's (NL) — distinct cities
+photoperiod_year(2024, location = "Saint John", aggregate = "month")
+#>          date daylength_hours   lat   location
+#> 1  2024-01-01        9.172983 45.27 saint_john
+#> 2  2024-02-01       10.354056 45.27 saint_john
+#> 3  2024-03-01       11.902529 45.27 saint_john
+#> 4  2024-04-01       13.528932 45.27 saint_john
+#> 5  2024-05-01       14.910968 45.27 saint_john
+#> 6  2024-06-01       15.593079 45.27 saint_john
+#> 7  2024-07-01       15.207900 45.27 saint_john
+#> 8  2024-08-01       13.954218 45.27 saint_john
+#> 9  2024-09-01       12.360833 45.27 saint_john
+#> 10 2024-10-01       10.748119 45.27 saint_john
+#> 11 2024-11-01        9.409230 45.27 saint_john
+#> 12 2024-12-01        8.785616 45.27 saint_john
+photoperiod_year(2024, location = "St John's", aggregate = "month")
+#>          date daylength_hours   lat location
+#> 1  2024-01-01        8.916550 47.56 st_johns
+#> 2  2024-02-01       10.207203 47.56 st_johns
+#> 3  2024-03-01       11.887952 47.56 st_johns
+#> 4  2024-04-01       13.652182 47.56 st_johns
+#> 5  2024-05-01       15.161088 47.56 st_johns
+#> 6  2024-06-01       15.912512 47.56 st_johns
+#> 7  2024-07-01       15.487501 47.56 st_johns
+#> 8  2024-08-01       14.115072 47.56 st_johns
+#> 9  2024-09-01       12.384641 47.56 st_johns
+#> 10 2024-10-01       10.635663 47.56 st_johns
+#> 11 2024-11-01        9.175674 47.56 st_johns
+#> 12 2024-12-01        8.490440 47.56 st_johns
+
+# List built-in sites
+photoperiod_sites()
+#>   st_johns saint_john     kumasi    nairobi  cape_town ain_mahbel 
+#>      47.56      45.27       6.69      -1.29     -33.92      34.24
+```
+
+A simple plot of daylength over the year:
+
+``` r
+plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
+     xlab = "Date", ylab = "Daylength (hours)",
+     main = "Photoperiod at St. John's, NL (2024)")
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+### Notes
+
+- Inputs like `"St John's"`, `"st_johns"`, and `"St.Johns"` all resolve
+  to the same NL site (`st_johns`).
+- `"Saint John"` / `"st john"` resolves to NB (`saint_john`).
+- If you pass `lat` (no `location`), the output is labeled as
+  `lat_<value>`.
 
 ## Example
 

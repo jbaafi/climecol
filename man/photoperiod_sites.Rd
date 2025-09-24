@@ -2,13 +2,39 @@
 % Please edit documentation in R/photoperiod.R
 \name{photoperiod_sites}
 \alias{photoperiod_sites}
-\title{List available built-in photoperiod sites}
+\title{Built-in photoperiod sites}
 \usage{
 photoperiod_sites()
 }
 \value{
-Named numeric vector of latitudes.
+A named numeric vector where names are site keys and values are
+latitudes (decimal degrees).
 }
 \description{
-List available built-in photoperiod sites
+Convenience key → latitude mapping used by \code{\link[=photoperiod_year]{photoperiod_year()}}.
+}
+\details{
+The following keys are provided:
+\itemize{
+\item \code{st_johns} — 47.56 (St. John's, NL, Canada)
+\item \code{saint_john} — 45.27 (Saint John, NB, Canada)
+\item \code{kumasi} — 6.69 (Ghana)
+\item \code{nairobi} — -1.29 (Kenya)
+\item \code{cape_town} — -33.92 (South Africa)
+\item \code{ain_mahbel} — 34.24 (Algeria)
+}
+
+Keys are matched case-insensitively and punctuation/spacing is ignored by
+the internal normalizer. For example, \code{"St John's"}, \code{"st_johns"},
+and \code{"St.Johns"} all resolve to \code{st_johns}; \code{"Saint John"} or
+\code{"st john"} resolve to \code{saint_john}.
+}
+\examples{
+# list available keys
+photoperiod_sites()
+
+# use with photoperiod_year()
+photoperiod_year(2024, location = "St John's") |> head()
+photoperiod_year(2024, location = "Saint John", aggregate = "month")
+
 }
