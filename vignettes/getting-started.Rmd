@@ -95,7 +95,7 @@ knitr::kable(cols, caption = "Columns in `weather_nl` with example values")
 
 ```
 
-Quick rainfall exploration
+### Quick rainfall exploration
 
 Use the package helper (works out of the box):
 
@@ -129,7 +129,7 @@ if (!is.na(date_col) && !is.na(rain_col)) {
 
 ```
 
-Temperature overview (if columns exist)
+### Temperature overview (if columns exist)
 
 ```{r}
 # Attempt to detect temperature columns

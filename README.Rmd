@@ -13,26 +13,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
-if (requireNamespace("pkgload", quietly = TRUE)) {
-  pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
-} else {
-  # Fallback if pkgload isn't available: try an installed version
-  suppressMessages(require(climecol, quietly = TRUE, character.only = TRUE))
-}
-```
-
-
-# climecol
+# `climecol`
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue)](https://jbaafi.github.io/climecol/)
 <!-- badges: end -->
+
 
 ## Overview
 
 `climecol` provides tools for archiving, cleaning, analyzing, and visualizing weather and climate data for ecological and infectious-disease modeling.
 It ships curated daily weather data and simple helpers for quick plotting and analysis.
+
 
 ## Installation
 

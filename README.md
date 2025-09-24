@@ -1,21 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-``` r
-if (requireNamespace("pkgload", quietly = TRUE)) {
-  pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
-} else {
-  # Fallback if pkgload isn't available: try an installed version
-  suppressMessages(require(climecol, quietly = TRUE, character.only = TRUE))
-}
-#> ℹ Loading climecol
-```
-
-# climecol
+# `climecol`
 
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue)](https://jbaafi.github.io/climecol/)
 <!-- badges: end -->
 
 ## Overview
@@ -133,7 +124,7 @@ plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
      main = "Photoperiod at St. John's, NL (2024)")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ### Notes
 

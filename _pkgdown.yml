@@ -2,27 +2,38 @@
 url: https://jbaafi.github.io/climecol/
 template:
   bootstrap: 5
-  #bootswatch: simplex   # minimal/clean; or remove this line to use default
+
 home:
   title: climecol
   description: Tools for climate/weather data in ecological modelling
+
 navbar:
   structure:
-    left:  [reference, articles]
+    left:  [getting-started, reference, articles, news]
     right: [search, github]
   components:
+    getting-started:
+      text: Getting started
+      href: articles/getting-started.html
     github:
       icon: fab fa-github
       href: https://github.com/jbaafi/climecol
+
+articles:
+  - title: Getting started
+    contents:
+      - getting-started
+
 reference:
   - title: Photoperiod
     contents:
       - daylength_f95
       - photoperiod_year
       - photoperiod_sites
-  - title: Plotting helpers
+  - title: Rainfall
     contents:
       - plot_rainfall
+      - summarise_rainfall_monthly
   - title: Data
     contents:
       - weather_nl
