@@ -28,5 +28,6 @@ Suggests:
     rmarkdown
 Config/testthat/edition: 3
 LazyData: true
-URL: https://github.com/jbaafi/climecol
+URL: https://github.com/jbaafi/climecol, https://jbaafi.github.io/climecol/
 BugReports: https://github.com/jbaafi/climecol/issues
+VignetteBuilder: knitr

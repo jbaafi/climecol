@@ -1,0 +1,28 @@
+# _pkgdown.yml
+url: https://jbaafi.github.io/climecol/
+template:
+  bootstrap: 5
+  #bootswatch: simplex   # minimal/clean; or remove this line to use default
+home:
+  title: climecol
+  description: Tools for climate/weather data in ecological modelling
+navbar:
+  structure:
+    left:  [reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/jbaafi/climecol
+reference:
+  - title: Photoperiod
+    contents:
+      - daylength_f95
+      - photoperiod_year
+      - photoperiod_sites
+  - title: Plotting helpers
+    contents:
+      - plot_rainfall
+  - title: Data
+    contents:
+      - weather_nl

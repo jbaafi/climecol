@@ -1,0 +1,185 @@
+---
+title: "Getting started with climecol"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with climecol}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, fig.height = 4.2,
+  message = FALSE, warning = FALSE
+)
+```
+
+## Why `climecol`?
+
+`climecol` helps you archive, explore, and use climate/weather data in ecological and infectious-disease models:
+
+ - Ships example daily weather data (Newfoundland) so you can prototype fast.
+
+ - Provides photoperiod (daylength) functions (no dependencies) for seasonal drivers.
+
+ - Includes simple plotting/helpers for quick QA and communication.
+
+ - Designed for reproducible workflows (works offline, CI-friendly).
+
+### Installation
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("jbaafi/climecol")
+```
+
+Load the package:
+
+```{r}
+library(climecol)
+```
+
+### Photoperiod (daylength)
+
+The photoperiod helpers implement a standard solar-geometry approximation (Forsythe et al., 1995) and return hours of daylight from date and latitude (timezone/longitude not required).
+
+Daily photoperiod for a site
+
+```{r}
+pp_nl <- photoperiod_year(2024, location = "St John's")
+head(pp_nl)
+```
+
+Quick plot:
+
+```{r}
+plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
+     xlab = "Date", ylab = "Daylength (hours)",
+     main = "Photoperiod — St. John's, NL (2024)")
+```
+
+Monthly means and multi-site comparison
+
+```{r}
+pp_nl_m <- photoperiod_year(2024, location = "St John's",  aggregate = "month")
+pp_nb_m <- photoperiod_year(2024, location = "Saint John", aggregate = "month")
+head(pp_nl_m); head(pp_nb_m)
+```
+
+> Keys are matched case-insensitively; punctuation/spacing ignored.  
+> `"St John's"`, `"st_johns"`, `"St.Johns"` → `st_johns` (NL); `"Saint John"` / `"st john"` → `saint_john` (NB).  
+> If you pass `lat` without `location`, results are labeled `lat_<value>`.
+
+### Built-in weather data (temperature & rainfall)
+`climecol` ships a Newfoundland daily weather dataset for examples and testing.
+
+```{r}
+data(weather_nl)
+str(weather_nl)
+```
+
+Columns and types
+
+```{r}
+cols <- data.frame(
+  column = names(weather_nl),
+  class  = vapply(weather_nl, function(x) paste(class(x), collapse="/"), character(1)),
+  example = vapply(weather_nl, function(x) {
+    i <- which(!is.na(x))[1]; if (length(i) == 0L) NA_character_ else as.character(x[i])
+  }, character(1)),
+  row.names = NULL
+)
+knitr::kable(cols, caption = "Columns in `weather_nl` with example values")
+
+```
+
+Quick rainfall exploration
+
+Use the package helper (works out of the box):
+
+```{r}
+plot_rainfall(weather_nl)
+```
+
+Or compute monthly rainfall yourself (robust to different column names):
+
+```{r}
+# try to detect date and rainfall columns
+date_col <- names(weather_nl)[grepl("date",  names(weather_nl), ignore.case=TRUE)][1]
+rain_col <- names(weather_nl)[grepl("rain|precip", names(weather_nl), ignore.case=TRUE)][1]
+
+if (!is.na(date_col) && !is.na(rain_col)) {
+  dat <- weather_nl
+  dat$..date <- as.Date(dat[[date_col]])
+  dat$..rain <- as.numeric(dat[[rain_col]])
+  dat$ym <- format(dat$..date, "%Y-%m")          # <-- make a real column
+
+  mon <- aggregate(..rain ~ ym, dat, sum, na.rm = TRUE)
+  names(mon) <- c("year_month", "rain_mm")
+  head(mon)
+
+  plot(as.Date(paste0(mon$year_month, "-01")), mon$rain_mm, type="h", lwd=4,
+       xlab = "Month", ylab = "Total rainfall (mm)",
+       main = "Monthly rainfall totals")
+} else {
+  message("Could not auto-detect date/rain columns.")
+}
+
+```
+
+Temperature overview (if columns exist)
+
+```{r}
+# Attempt to detect temperature columns
+nms <- names(weather_nl)
+tmax <- nms[grepl("tmax|temp_max|max", nms, ignore.case=TRUE)][1]
+tmin <- nms[grepl("tmin|temp_min|min", nms, ignore.case=TRUE)][1]
+tmean <- nms[grepl("tmean|temp_mean|mean", nms, ignore.case=TRUE)][1]
+date_col <- nms[grepl("date", nms, ignore.case=TRUE)][1]
+
+if (!is.na(date_col) && (!is.na(tmean) || (!is.na(tmax) && !is.na(tmin)))) {
+  dat <- weather_nl
+  dat$..date <- as.Date(dat[[date_col]])
+  if (is.na(tmean)) {
+    dat$..tmean <- rowMeans(cbind(as.numeric(dat[[tmax]]), as.numeric(dat[[tmin]])), na.rm = TRUE)
+  } else {
+    dat$..tmean <- as.numeric(dat[[tmean]])
+  }
+  dat$ym <- format(dat$..date, "%Y-%m")         # <-- real column
+
+  monT <- aggregate(..tmean ~ ym, dat, mean, na.rm = TRUE)
+  names(monT) <- c("year_month", "tmean_C")
+  head(monT)
+
+  plot(as.Date(paste0(monT$year_month, "-01")), monT$tmean_C, type="l", lwd=2,
+       xlab = "Month", ylab = "Mean temperature (°C)",
+       main = "Monthly mean temperature")
+} else {
+  message("Could not auto-detect temperature columns.")
+}
+
+```
+
+Export photoperiod for modeling
+
+```{r}
+out_file <- file.path(tempdir(), "photoperiod_st_johns_2024.csv")
+write.csv(pp_nl, out_file, row.names = FALSE)
+out_file
+```
+
+> The file is written to a temporary folder during vignette build. Replace tempdir() with your project path in real workflows.
+
+
+> **Reference**  
+> Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., & Schoolfield, R. M. (1995).  
+> *A model comparison for daylength as a function of latitude and day of year.* Ecological Modelling, 80, 87–95.
+
+Session info
+
+```{r session-info, eval=FALSE}
+sessionInfo()
+```
+
