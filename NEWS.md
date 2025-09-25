@@ -1,4 +1,4 @@
-# climecol (development version)
+# climecol 0.1.0
 
 - Initial setup of pkgdown site.
 - Photoperiod helpers added: `daylength_f95()`, `photoperiod_year()`.
