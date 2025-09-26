@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climecol</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,18 @@
       <small>Source: <a href="https://github.com/jbaafi/climecol/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="climecol-011">climecol 0.1.1<a class="anchor" aria-label="anchor" href="#climecol-011"></a></h2>
+<ul><li>Added <strong>Data management</strong> utilities:
+<ul><li>
+<code>read_weather_csv()</code>: source-agnostic CSV importer with a default EC mapping.</li>
+<li>
+<code>default_weather_mapping()</code>: starter mapping for Environment Canada daily exports.</li>
+<li>
+<code>validate_weather()</code>: configurable QA checks (temp bounds, rain max, optional snow max), optional precipitation-consistency flags (rain vs SWE), and calendar completeness.</li>
+</ul></li>
+<li>Added unit tests for these functions, pkgdown reference section, and vignette.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="climecol-010">climecol 0.1.0<a class="anchor" aria-label="anchor" href="#climecol-010"></a></h2>
 <ul><li>Initial setup of pkgdown site.</li>
