@@ -39,6 +39,17 @@ devtools::install_github("jbaafi/climecol")
 
 (Alternatively: `pak::pak("jbaafi/climecol")`.)
 
+## Data Importation
+
+```{r, eval=FALSE}
+library(climecol)
+wx <- read_weather_csv("/Users/jbaafi/Desktop/data.csv")
+qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
+qa$summary
+
+```
+
+
 ## Photoperiod (daylength)
 
 The package includes fast, dependency-free photoperiod helpers based on a standard solar-geometry approximation (Forsythe et al., 1995). These return **hours of daylight** from date and latitude only—ideal as a smooth seasonal driver for ecological models.

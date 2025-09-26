@@ -1,0 +1,2 @@
+Date.Time,Station.Name,Climate.ID,Longitude..x.,Latitude..y.,Max.Temp...C.,Min.Temp...C.,Total.Rain..mm.,Total.Snow..cm.,Total.Precip..mm.,Snow.on.Grnd..cm.,Dir.of.Max.Gust..10s.deg.,Spd.of.Max.Gust..km.h.
+2013-01-01,YYT,123,-52.75,47.62,-2.0,-6.5,0.0,0.0,0.0,0,18,35

@@ -30,6 +30,15 @@ devtools::install_github("jbaafi/climecol")
 
 (Alternatively: `pak::pak("jbaafi/climecol")`.)
 
+## Data Importation
+
+``` r
+library(climecol)
+wx <- read_weather_csv("/Users/jbaafi/Desktop/data.csv")
+qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
+qa$summary
+```
+
 ## Photoperiod (daylength)
 
 The package includes fast, dependency-free photoperiod helpers based on
@@ -126,7 +135,7 @@ plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
      main = "Photoperiod at St. John's, NL (2024)")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ### Notes
 

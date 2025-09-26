@@ -25,6 +25,11 @@ articles:
       - getting-started
 
 reference:
+  - title: Data management
+    contents:
+      - read_weather_csv
+      - default_weather_mapping
+      - validate_weather
   - title: Photoperiod
     contents:
       - daylength_f95

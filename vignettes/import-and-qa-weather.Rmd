@@ -1,0 +1,109 @@
+---
+title: "Import and QA weather data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Import and QA weather data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4
+)
+library(climecol)
+library(dplyr)
+```
+
+# Overview
+
+This vignette shows two ways to get a clean, validated weather table:
+
+1. **Load a dataset shipped with the package**  
+   Example: `weather_nl`
+
+2. **Import a raw CSV and validate**  
+   - Import with `read_weather_csv()` (e.g., an Environment Canada daily export)  
+   - Run quality checks with `validate_weather()`
+
+---
+
+## Standardized Schema
+
+The standardized schema produced by `read_weather_csv()` includes:
+
+- `date`  
+- `station`  
+- `climate_id`  
+- `lon`, `lat`  
+- `tmax_c`, `tmin_c`, `tavg_c`  
+- `rain_mm`, `snow_cm`, `precip_mm`  
+- `snow_on_ground_cm`  
+- `wind_spd_kmh`, `wind_dir_deg`
+
+1. Using a bundled dataset
+
+```{r}
+# Data shipped with the package:
+# data("weather_nl")
+# head(weather_nl)
+```
+
+2. Import raw CSV from disk
+
+```{r}
+# Example: read an Environment Canada (EC) style CSV (uses default mapping)
+# wx <- read_weather_csv("/Users/jbaafi/Desktop/data.csv")
+
+# For non-EC columns, provide a mapping:
+# my_map <- c("date"="date","station"="station","tmax"="tmax_c","tmin"="tmin_c","prcp"="rain_mm")
+# wx <- read_weather_csv("path/to/other_source.csv", mapping = my_map)
+
+```
+
+3. Validate and summarize
+
+```{r}
+# Default thresholds (temp -60..60 °C, rain_max 200 mm)
+# qa <- validate_weather(wx)
+
+# Tighter thresholds for coastal NL (example):
+# qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
+
+# Turn off precip consistency if your source doesn’t guarantee identities:
+# qa <- validate_weather(wx, check_precip_consistency = FALSE)
+
+# Inspect:
+# qa$summary
+# head(qa$flags)
+
+```
+
+4. Work with the standardized table
+
+Once data pass QA, downstream functions can assume consistent columns:
+
+```{r}
+# Monthly rainfall summary (example - adapt to your functions)
+# monthly <- wx |>
+#   mutate(year = lubridate::year(date), month = lubridate::month(date)) |>
+#   group_by(station, year, month) |>
+#   summarise(rain_mm = sum(rain_mm, na.rm = TRUE), .groups = "drop")
+# head(monthly)
+
+```
+
+
+5. Save a standardized dataset into the package (optional)
+
+```{r}
+# Persist a clean example for docs/tests
+# usethis::use_data(wx, name = "weather_std_example", overwrite = TRUE)
+
+```
+
+
+
