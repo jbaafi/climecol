@@ -1,6 +1,6 @@
 Package: climecol
 Title: Climate and Weather Data Tools for Ecological Modeling
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person(given = "Joseph", family = "Baafi",
            email = "jbaafi@mun.ca",
@@ -21,7 +21,9 @@ Imports:
     dplyr,
     tidyr,
     lubridate,
-    rlang
+    rlang,
+    readr,
+    tibble
 Suggests: 
     testthat (>= 3.0.0),
     knitr,
