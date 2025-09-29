@@ -18,6 +18,7 @@ navbar:
     github:
       icon: fab fa-github
       href: https://github.com/jbaafi/climecol
+      aria-label: "GitHub repository"
 
 articles:
   - title: Getting started
