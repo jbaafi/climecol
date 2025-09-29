@@ -24,6 +24,10 @@ articles:
     contents:
       - getting-started
 
+  - title: Guides
+    contents:
+      - import-and-qa-weather
+
 reference:
   - title: Data management
     contents:
