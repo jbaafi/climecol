@@ -132,8 +132,9 @@ validate_weather <- function(df,
   if (nrow(flags_tbl)) {
     flags_tbl <- flags_tbl |>
       dplyr::arrange(.data$station, .data$date) |>
-      dplyr::select(-check)
+      dplyr::select(!dplyr::all_of("check"))
   }
+
 
   summary <- tibble::tibble(
     n_rows                = nrow(df),

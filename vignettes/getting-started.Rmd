@@ -41,6 +41,16 @@ Load the package:
 library(climecol)
 ```
 
+### Loading Data
+
+```{r, eval=FALSE}
+wx <- read_weather_csv("data-raw/combined_data.csv")
+qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
+qa$summary
+
+```
+
+
 ### Photoperiod (daylength)
 
 The photoperiod helpers implement a standard solar-geometry approximation (Forsythe et al., 1995) and return hours of daylight from date and latitude (timezone/longitude not required).
