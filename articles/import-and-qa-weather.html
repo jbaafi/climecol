@@ -118,7 +118,7 @@ includes:</p>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Data shipped with the package:</span></span>
-<span><span class="co"># data("weather_nl")</span></span>
+<span><span class="co">#data("weather_nl")</span></span>
 <span><span class="co"># head(weather_nl)</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Import raw CSV from disk</li>
@@ -164,6 +164,204 @@ columns:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Persist a clean example for docs/tests</span></span>
 <span><span class="co"># usethis::use_data(wx, name = "weather_std_example", overwrite = TRUE)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="gaps-and-imputation">Gaps and Imputation<a class="anchor" aria-label="anchor" href="#gaps-and-imputation"></a>
+</h3>
+<p>Real-world weather data almost always contain gaps due to missing
+observations, instrument downtime, or quality filtering. For climate- or
+ecology-driven models, consistent daily time series are essential. The
+package provides three lightweight helpers to support this workflow:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use the package dataset so the vignette always builds reproducibly</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Normalize column names</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Peek at columns (should include: date, station, tmin_c, tmax_c, tavg_c, rain_mm, precip_mm, snow_cm)</span></span>
+<span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: 5,844</span></span>
+<span><span class="co">#&gt; Columns: 13</span></span>
+<span><span class="co">#&gt; $ date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2008-01-01<span style="color: #949494;">, </span>2008-01-02<span style="color: #949494;">, </span>2008-01-03<span style="color: #949494;">, </span>2008-01-04<span style="color: #949494;">, </span>2008-01-…</span></span>
+<span><span class="co">#&gt; $ Year         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>2008<span style="color: #949494;">, </span>200…</span></span>
+<span><span class="co">#&gt; $ Month        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>…</span></span>
+<span><span class="co">#&gt; $ Day          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1<span style="color: #949494;">, </span>2<span style="color: #949494;">, </span>3<span style="color: #949494;">, </span>4<span style="color: #949494;">, </span>5<span style="color: #949494;">, </span>6<span style="color: #949494;">, </span>7<span style="color: #949494;">, </span>8<span style="color: #949494;">, </span>9<span style="color: #949494;">, </span>10<span style="color: #949494;">, </span>11<span style="color: #949494;">, </span>12<span style="color: #949494;">, </span>13<span style="color: #949494;">, </span>14<span style="color: #949494;">, </span>15<span style="color: #949494;">, </span>16<span style="color: #949494;">, </span>17…</span></span>
+<span><span class="co">#&gt; $ tmin_c       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> -6.6<span style="color: #949494;">, </span>-8.1<span style="color: #949494;">, </span>-11.0<span style="color: #949494;">, </span>-12.6<span style="color: #949494;">, </span>-9.6<span style="color: #949494;">, </span>-10.5<span style="color: #949494;">, </span>-4.2<span style="color: #949494;">, </span>-1.2<span style="color: #949494;">, </span>-2.5<span style="color: #949494;">, </span>…</span></span>
+<span><span class="co">#&gt; $ tmax_c       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1.6<span style="color: #949494;">, </span>2.0<span style="color: #949494;">, </span>-0.4<span style="color: #949494;">, </span>-5.9<span style="color: #949494;">, </span>-2.4<span style="color: #949494;">, </span>-2.5<span style="color: #949494;">, </span>2.5<span style="color: #949494;">, </span>3.8<span style="color: #949494;">, </span>0.5<span style="color: #949494;">, </span>9.5<span style="color: #949494;">, </span>0.5…</span></span>
+<span><span class="co">#&gt; $ tavg_c       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> -2.5<span style="color: #949494;">, </span>-3.1<span style="color: #949494;">, </span>-5.7<span style="color: #949494;">, </span>-9.3<span style="color: #949494;">, </span>-6.0<span style="color: #949494;">, </span>-6.5<span style="color: #949494;">, </span>-0.9<span style="color: #949494;">, </span>1.3<span style="color: #949494;">, </span>-1.0<span style="color: #949494;">, </span>4.8<span style="color: #949494;">,</span>…</span></span>
+<span><span class="co">#&gt; $ rain_mm      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.2<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.2<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.6<span style="color: #949494;">, </span>0.8<span style="color: #949494;">, </span>8.2<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>11…</span></span>
+<span><span class="co">#&gt; $ precip_mm    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2.0<span style="color: #949494;">, </span>4.5<span style="color: #949494;">, </span>0.2<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>1.6<span style="color: #949494;">, </span>2.2<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.6<span style="color: #949494;">, </span>1.8<span style="color: #949494;">, </span>8.2<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>11…</span></span>
+<span><span class="co">#&gt; $ snow_cm      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1.8<span style="color: #949494;">, </span>5.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>2.6<span style="color: #949494;">, </span>6.4<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>1.8<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.…</span></span>
+<span><span class="co">#&gt; $ Station.Name <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A…</span></span>
+<span><span class="co">#&gt; $ Climate.ID   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>840…</span></span>
+<span><span class="co">#&gt; $ station      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A…</span></span></code></pre></div>
+<p>or we can also load data from a different source with the code format
+below</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example only — not run during vignette build:</span></span>
+<span><span class="co"># wx &lt;- read_weather_csv("data-raw/combined_data.csv")</span></span>
+<span><span class="co"># wx &lt;- read_weather_csv("~/Desktop/combined_data.csv")</span></span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>
+<strong><code><a href="../reference/complete_daily_calendar.html">complete_daily_calendar()</a></code></strong>
+<ul>
+<li>Expands the date range for each station to cover the full period of
+record.</li>
+<li>Missing rows are inserted for absent days, flagged with
+<code>is_missing_row = TRUE</code>.</li>
+<li>This creates a consistent daily skeleton that downstream functions
+can rely on.</li>
+</ul>
+</li>
+</ol>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_cal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/complete_daily_calendar.html">complete_daily_calendar</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_cal</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 14</span></span></span>
+<span><span class="co">#&gt;    station   date        Year Month   Day tmin_c tmax_c tavg_c rain_mm precip_mm</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> ST JOHN'… 2008-01-01  <span style="text-decoration: underline;">2</span>008     1     1   -<span style="color: #BB0000;">6.6</span>    1.6   -<span style="color: #BB0000;">2.5</span>     0.2       2  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> ST JOHN'… 2008-01-02  <span style="text-decoration: underline;">2</span>008     1     2   -<span style="color: #BB0000;">8.1</span>    2     -<span style="color: #BB0000;">3.1</span>     0         4.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> ST JOHN'… 2008-01-03  <span style="text-decoration: underline;">2</span>008     1     3  -<span style="color: #BB0000;">11</span>     -<span style="color: #BB0000;">0.4</span>   -<span style="color: #BB0000;">5.7</span>     0.2       0.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> ST JOHN'… 2008-01-04  <span style="text-decoration: underline;">2</span>008     1     4  -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">5.9</span>   -<span style="color: #BB0000;">9.3</span>     0         0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ST JOHN'… 2008-01-05  <span style="text-decoration: underline;">2</span>008     1     5   -<span style="color: #BB0000;">9.6</span>   -<span style="color: #BB0000;">2.4</span>   -<span style="color: #BB0000;">6</span>       0         1.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> ST JOHN'… 2008-01-06  <span style="text-decoration: underline;">2</span>008     1     6  -<span style="color: #BB0000;">10.5</span>   -<span style="color: #BB0000;">2.5</span>   -<span style="color: #BB0000;">6.5</span>     0         2.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> ST JOHN'… 2008-01-07  <span style="text-decoration: underline;">2</span>008     1     7   -<span style="color: #BB0000;">4.2</span>    2.5   -<span style="color: #BB0000;">0.9</span>     0         0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> ST JOHN'… 2008-01-08  <span style="text-decoration: underline;">2</span>008     1     8   -<span style="color: #BB0000;">1.2</span>    3.8    1.3     0.6       0.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> ST JOHN'… 2008-01-09  <span style="text-decoration: underline;">2</span>008     1     9   -<span style="color: #BB0000;">2.5</span>    0.5   -<span style="color: #BB0000;">1</span>       0.8       1.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> ST JOHN'… 2008-01-10  <span style="text-decoration: underline;">2</span>008     1    10    0      9.5    4.8     8.2       8.2</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: snow_cm &lt;dbl&gt;, Station.Name &lt;chr&gt;, Climate.ID &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   is_missing_row &lt;lgl&gt;</span></span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li><code><a href="../reference/summarise_gaps.html">summarise_gaps()</a></code></li>
+</ol>
+<ul>
+<li><p>Quantifies coverage per station (or station-month).</p></li>
+<li><p>Reports number of days, number missing, proportion covered, count
+of gaps, and longest gap length.</p></li>
+<li><p>Useful for quickly diagnosing where records are most complete or
+problematic.</p></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gap_by_station</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarise_gaps.html">summarise_gaps</a></span><span class="op">(</span><span class="va">df_cal</span>, by <span class="op">=</span> <span class="st">"station"</span><span class="op">)</span></span>
+<span><span class="va">gap_by_month</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarise_gaps.html">summarise_gaps</a></span><span class="op">(</span><span class="va">df_cal</span>, by <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Show quick summaries</span></span>
+<span><span class="va">gap_by_station</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
+<span><span class="co">#&gt;   station           n_days n_missing coverage n_gaps longest_gap</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ST JOHN'S A         <span style="text-decoration: underline;">1</span>827         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> ST. JOHN'S INTL A   <span style="text-decoration: underline;">4</span>017         0        1      0           0</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gap_by_month</span>, <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
+<span><span class="co">#&gt;   station     month   n_days n_missing coverage n_gaps longest_gap</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ST JOHN'S A 2008-01     31         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> ST JOHN'S A 2008-02     29         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> ST JOHN'S A 2008-03     31         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> ST JOHN'S A 2008-04     30         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> ST JOHN'S A 2008-05     31         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> ST JOHN'S A 2008-06     30         0        1      0           0</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li><code><a href="../reference/impute_weather.html">impute_weather()</a></code></li>
+</ol>
+<ul>
+<li><p>Provides simple methods to fill missing values.</p></li>
+<li>
+<p>Options include:</p>
+<ul>
+<li><p><code>"locf"</code>: last observation carried forward</p></li>
+<li><p><code>"linear"</code>: straight-line interpolation</p></li>
+<li><p><code>"spline"</code>: smooth spline interpolation</p></li>
+</ul>
+</li>
+<li><p>Each method makes different assumptions and should be documented
+clearly when used.</p></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_weather.html">impute_weather</a></span><span class="op">(</span></span>
+<span>  <span class="va">df_cal</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"linear"</span>,</span>
+<span>  cols   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmax_c"</span>,<span class="st">"tmin_c"</span>,<span class="st">"tavg_c"</span><span class="op">)</span>,</span>
+<span>  max_gap <span class="op">=</span> <span class="fl">7</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Inspect results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_cal</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 14</span></span></span>
+<span><span class="co">#&gt;   station    date        Year Month   Day tmin_c tmax_c tavg_c rain_mm precip_mm</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ST JOHN'S… 2008-01-01  <span style="text-decoration: underline;">2</span>008     1     1   -<span style="color: #BB0000;">6.6</span>    1.6   -<span style="color: #BB0000;">2.5</span>     0.2       2  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> ST JOHN'S… 2008-01-02  <span style="text-decoration: underline;">2</span>008     1     2   -<span style="color: #BB0000;">8.1</span>    2     -<span style="color: #BB0000;">3.1</span>     0         4.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> ST JOHN'S… 2008-01-03  <span style="text-decoration: underline;">2</span>008     1     3  -<span style="color: #BB0000;">11</span>     -<span style="color: #BB0000;">0.4</span>   -<span style="color: #BB0000;">5.7</span>     0.2       0.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> ST JOHN'S… 2008-01-04  <span style="text-decoration: underline;">2</span>008     1     4  -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">5.9</span>   -<span style="color: #BB0000;">9.3</span>     0         0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> ST JOHN'S… 2008-01-05  <span style="text-decoration: underline;">2</span>008     1     5   -<span style="color: #BB0000;">9.6</span>   -<span style="color: #BB0000;">2.4</span>   -<span style="color: #BB0000;">6</span>       0         1.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> ST JOHN'S… 2008-01-06  <span style="text-decoration: underline;">2</span>008     1     6  -<span style="color: #BB0000;">10.5</span>   -<span style="color: #BB0000;">2.5</span>   -<span style="color: #BB0000;">6.5</span>     0         2.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> ST JOHN'S… 2008-01-07  <span style="text-decoration: underline;">2</span>008     1     7   -<span style="color: #BB0000;">4.2</span>    2.5   -<span style="color: #BB0000;">0.9</span>     0         0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> ST JOHN'S… 2008-01-08  <span style="text-decoration: underline;">2</span>008     1     8   -<span style="color: #BB0000;">1.2</span>    3.8    1.3     0.6       0.6</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: snow_cm &lt;dbl&gt;, Station.Name &lt;chr&gt;, Climate.ID &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   is_missing_row &lt;lgl&gt;</span></span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_imp</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 14</span></span></span>
+<span><span class="co">#&gt;   station    date        Year Month   Day tmin_c tmax_c tavg_c rain_mm precip_mm</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ST JOHN'S… 2008-01-01  <span style="text-decoration: underline;">2</span>008     1     1   -<span style="color: #BB0000;">6.6</span>    1.6   -<span style="color: #BB0000;">2.5</span>     0.2       2  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> ST JOHN'S… 2008-01-02  <span style="text-decoration: underline;">2</span>008     1     2   -<span style="color: #BB0000;">8.1</span>    2     -<span style="color: #BB0000;">3.1</span>     0         4.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> ST JOHN'S… 2008-01-03  <span style="text-decoration: underline;">2</span>008     1     3  -<span style="color: #BB0000;">11</span>     -<span style="color: #BB0000;">0.4</span>   -<span style="color: #BB0000;">5.7</span>     0.2       0.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> ST JOHN'S… 2008-01-04  <span style="text-decoration: underline;">2</span>008     1     4  -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">5.9</span>   -<span style="color: #BB0000;">9.3</span>     0         0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> ST JOHN'S… 2008-01-05  <span style="text-decoration: underline;">2</span>008     1     5   -<span style="color: #BB0000;">9.6</span>   -<span style="color: #BB0000;">2.4</span>   -<span style="color: #BB0000;">6</span>       0         1.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> ST JOHN'S… 2008-01-06  <span style="text-decoration: underline;">2</span>008     1     6  -<span style="color: #BB0000;">10.5</span>   -<span style="color: #BB0000;">2.5</span>   -<span style="color: #BB0000;">6.5</span>     0         2.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> ST JOHN'S… 2008-01-07  <span style="text-decoration: underline;">2</span>008     1     7   -<span style="color: #BB0000;">4.2</span>    2.5   -<span style="color: #BB0000;">0.9</span>     0         0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> ST JOHN'S… 2008-01-08  <span style="text-decoration: underline;">2</span>008     1     8   -<span style="color: #BB0000;">1.2</span>    3.8    1.3     0.6       0.6</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: snow_cm &lt;dbl&gt;, Station.Name &lt;chr&gt;, Climate.ID &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   is_missing_row &lt;lgl&gt;</span></span></span></code></pre></div>
+<p>Example workflow</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 1. Ensure calendar completeness</span></span>
+<span><span class="va">df_cal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/complete_daily_calendar.html">complete_daily_calendar</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Summarise gaps by station</span></span>
+<span><span class="va">gap_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarise_gaps.html">summarise_gaps</a></span><span class="op">(</span><span class="va">df_cal</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gap_summary</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
+<span><span class="co">#&gt;   station           n_days n_missing coverage n_gaps longest_gap</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ST JOHN'S A         <span style="text-decoration: underline;">1</span>827         0        1      0           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> ST. JOHN'S INTL A   <span style="text-decoration: underline;">4</span>017         0        1      0           0</span></span>
+<span></span>
+<span><span class="co"># 3. Fill missing values with linear interpolation</span></span>
+<span><span class="va">df_imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_weather.html">impute_weather</a></span><span class="op">(</span><span class="va">df_cal</span>, method <span class="op">=</span> <span class="st">"linear"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Now df_imp can be used safely in climate-driven models</span></span></code></pre></div>
+<p>or if you want to load your own data, the workflow becomes</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Typical workflow:</span></span>
+<span><span class="co"># wx        &lt;- read_weather_csv("path/to/raw.csv")</span></span>
+<span><span class="co"># wx_cal    &lt;- complete_daily_calendar(wx)</span></span>
+<span><span class="co"># gaps      &lt;- summarise_gaps(wx_cal, by = "station")</span></span>
+<span><span class="co"># wx_imp    &lt;- impute_weather(wx_cal, method = "linear", cols = c("tmax_c","tmin_c","tavg_c"), max_gap = 7)</span></span>
+<span><span class="co"># qa_after  &lt;- validate_weather(wx_imp)</span></span>
+<span><span class="co"># qa_after$summary</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="notes-and-caveats">Notes and Caveats<a class="anchor" aria-label="anchor" href="#notes-and-caveats"></a>
+</h4>
+<ul>
+<li><p>These functions are <em>not</em> designed for climatological
+homogenization; they provide practical utilities for simulation-ready
+daily data.</p></li>
+<li><p>Gap imputation introduces uncertainty; users should document
+choices and, where possible, conduct sensitivity analyses.</p></li>
+<li><p>For critical applications (e.g., climate trend estimation),
+consider specialized homogenization tools outside this package.</p></li>
+</ul>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -35,6 +35,39 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.3" id="climecol-013-2025-10-01">climecol 0.1.3 (2025-10-01)<a class="anchor" aria-label="anchor" href="#climecol-013-2025-10-01"></a></h2>
+<div class="section level3">
+<h3 id="new-0-1-3">New<a class="anchor" aria-label="anchor" href="#new-0-1-3"></a></h3>
+<ul><li>Added <code><a href="../reference/normalize_weather_names.html">normalize_weather_names()</a></code> to standardize column names (e.g., <code>Date</code> → <code>date</code>, <code>Rain_mm</code> → <code>rain_mm</code>, <code>Station.Name</code> → <code>station</code>) for smoother downstream workflows.<br></li>
+<li>Added <code>zzz.R</code> with <code><a href="https://rdrr.io/r/utils/globalVariables.html" class="external-link">utils::globalVariables()</a></code> declarations to silence notes about NSE variables (<code>n_days</code>, <code>n_missing</code>, etc.).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-1-3">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-3"></a></h3>
+<ul><li>Updated <code>weather_nl</code> dataset to include <code>Station.Name</code>, <code>Climate.ID</code>, and a canonical <code>station</code> key.<br></li>
+<li>Harmonized internal helpers and vignettes to use lower-case column conventions (<code>date</code>, <code>rain_mm</code>).<br></li>
+<li>
+<code><a href="../reference/summarise_rainfall_monthly.html">summarise_rainfall_monthly()</a></code> and <code><a href="../reference/plot_rainfall.html">plot_rainfall()</a></code> are now robust to modernized column names.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-0-1-3">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-1-3"></a></h3>
+<ul><li>Fixed vignette build errors caused by outdated column references (<code>Date</code>, <code>Rain_mm</code>).<br></li>
+<li>Fixed examples and tests so they run consistently with the updated dataset and helpers.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.2" id="climecol-012">climecol 0.1.2<a class="anchor" aria-label="anchor" href="#climecol-012"></a></h2>
+<ul><li>Added new helpers for gap handling and imputation:
+<ul><li>
+<code><a href="../reference/complete_daily_calendar.html">complete_daily_calendar()</a></code>: ensures a complete daily date sequence per station, inserting missing rows flagged with <code>is_missing_row</code>.</li>
+<li>
+<code><a href="../reference/summarise_gaps.html">summarise_gaps()</a></code>: quantifies coverage, missingness, and longest gaps per station or month.</li>
+<li>
+<code><a href="../reference/impute_weather.html">impute_weather()</a></code>: provides simple gap fillers (<code>"locf"</code>, <code>"linear"</code>, <code>"spline"</code>) with safeguards for short gaps.</li>
+</ul></li>
+<li>Extended vignette with a new <strong>Gaps + Imputation</strong> section illustrating their use.</li>
+<li>Improved documentation with explicit notes and caveats about imputation assumptions.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="climecol-011">climecol 0.1.1<a class="anchor" aria-label="anchor" href="#climecol-011"></a></h2>
 <ul><li>Added <strong>Data management</strong> utilities:
 <ul><li>
