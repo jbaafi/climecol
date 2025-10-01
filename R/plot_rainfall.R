@@ -16,11 +16,14 @@
 #' data(weather_nl)
 #' plot_rainfall(weather_nl)
 plot_rainfall <- function(df) {
-  stopifnot(all(c("Date", "Rain_mm") %in% names(df)))
+  # normalize data to handle column inputs
+  df <- normalize_weather_names(df)
 
-  df <- dplyr::mutate(df, Date = as.Date(.data$Date))
+  stopifnot(all(c("date", "rain_mm") %in% names(df)))
 
-  ggplot2::ggplot(df, ggplot2::aes(x = .data$Date, y = .data$Rain_mm)) +
+  df <- dplyr::mutate(df, date = as.Date(.data$date))
+
+  ggplot2::ggplot(df, ggplot2::aes(x = .data$date, y = .data$rain_mm)) +
     ggplot2::geom_col() +
     ggplot2::labs(
       title = "Daily Rainfall",

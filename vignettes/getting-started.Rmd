@@ -45,6 +45,7 @@ library(climecol)
 
 ```{r, eval=FALSE}
 wx <- read_weather_csv("data-raw/combined_data.csv")
+wx <- normalize_weather_names(wx)
 qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
 qa$summary
 
@@ -66,7 +67,7 @@ Quick plot:
 
 ```{r}
 plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
-     xlab = "Date", ylab = "Daylength (hours)",
+     xlab = "date", ylab = "Daylength (hours)",
      main = "Photoperiod — St. John's, NL (2024)")
 ```
 
@@ -86,22 +87,29 @@ head(pp_nl_m); head(pp_nb_m)
 `climecol` ships a Newfoundland daily weather dataset for examples and testing.
 
 ```{r}
-data(weather_nl)
-str(weather_nl)
+library(dplyr)
+
+# Start from the shipped dataset
+df <- weather_nl
+
+# Normalize names to the climecol API
+df <- normalize_weather_names(df)
+
+glimpse(df)
 ```
 
 Columns and types
 
 ```{r}
 cols <- data.frame(
-  column = names(weather_nl),
-  class  = vapply(weather_nl, function(x) paste(class(x), collapse="/"), character(1)),
-  example = vapply(weather_nl, function(x) {
+  column = names(df),
+  class  = vapply(df, function(x) paste(class(x), collapse="/"), character(1)),
+  example = vapply(df, function(x) {
     i <- which(!is.na(x))[1]; if (length(i) == 0L) NA_character_ else as.character(x[i])
   }, character(1)),
   row.names = NULL
 )
-knitr::kable(cols, caption = "Columns in `weather_nl` with example values")
+knitr::kable(cols, caption = "Columns in `df` with example values")
 
 ```
 
@@ -110,18 +118,18 @@ knitr::kable(cols, caption = "Columns in `weather_nl` with example values")
 Use the package helper (works out of the box):
 
 ```{r}
-plot_rainfall(weather_nl)
+plot_rainfall(df)
 ```
 
 Or compute monthly rainfall yourself (robust to different column names):
 
 ```{r}
 # try to detect date and rainfall columns
-date_col <- names(weather_nl)[grepl("date",  names(weather_nl), ignore.case=TRUE)][1]
-rain_col <- names(weather_nl)[grepl("rain|precip", names(weather_nl), ignore.case=TRUE)][1]
+date_col <- names(df)[grepl("date",  names(df), ignore.case=TRUE)][1]
+rain_col <- names(df)[grepl("rain|precip", names(df), ignore.case=TRUE)][1]
 
 if (!is.na(date_col) && !is.na(rain_col)) {
-  dat <- weather_nl
+  dat <- df
   dat$..date <- as.Date(dat[[date_col]])
   dat$..rain <- as.numeric(dat[[rain_col]])
   dat$ym <- format(dat$..date, "%Y-%m")          # <-- make a real column
@@ -143,14 +151,14 @@ if (!is.na(date_col) && !is.na(rain_col)) {
 
 ```{r}
 # Attempt to detect temperature columns
-nms <- names(weather_nl)
+nms <- names(df)
 tmax <- nms[grepl("tmax|temp_max|max", nms, ignore.case=TRUE)][1]
 tmin <- nms[grepl("tmin|temp_min|min", nms, ignore.case=TRUE)][1]
 tmean <- nms[grepl("tmean|temp_mean|mean", nms, ignore.case=TRUE)][1]
 date_col <- nms[grepl("date", nms, ignore.case=TRUE)][1]
 
 if (!is.na(date_col) && (!is.na(tmean) || (!is.na(tmax) && !is.na(tmin)))) {
-  dat <- weather_nl
+  dat <- df
   dat$..date <- as.Date(dat[[date_col]])
   if (is.na(tmean)) {
     dat$..tmean <- rowMeans(cbind(as.numeric(dat[[tmax]]), as.numeric(dat[[tmin]])), na.rm = TRUE)

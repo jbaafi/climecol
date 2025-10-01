@@ -1,3 +1,28 @@
+# climecol 0.1.3 (2025-10-01)
+
+## New
+- Added `normalize_weather_names()` to standardize column names (e.g., `Date` → `date`, `Rain_mm` → `rain_mm`, `Station.Name` → `station`) for smoother downstream workflows.  
+- Added `zzz.R` with `utils::globalVariables()` declarations to silence notes about NSE variables (`n_days`, `n_missing`, etc.).
+
+## Improvements
+- Updated `weather_nl` dataset to include `Station.Name`, `Climate.ID`, and a canonical `station` key.  
+- Harmonized internal helpers and vignettes to use lower-case column conventions (`date`, `rain_mm`).  
+- `summarise_rainfall_monthly()` and `plot_rainfall()` are now robust to modernized column names.
+
+## Fixes
+- Fixed vignette build errors caused by outdated column references (`Date`, `Rain_mm`).  
+- Fixed examples and tests so they run consistently with the updated dataset and helpers.  
+
+
+# climecol 0.1.2
+
+- Added new helpers for gap handling and imputation:
+  - `complete_daily_calendar()`: ensures a complete daily date sequence per station, inserting missing rows flagged with `is_missing_row`.
+  - `summarise_gaps()`: quantifies coverage, missingness, and longest gaps per station or month.
+  - `impute_weather()`: provides simple gap fillers (`"locf"`, `"linear"`, `"spline"`) with safeguards for short gaps.
+- Extended vignette with a new **Gaps + Imputation** section illustrating their use.
+- Improved documentation with explicit notes and caveats about imputation assumptions.
+
 # climecol 0.1.1
 
 - Added **Data management** utilities:

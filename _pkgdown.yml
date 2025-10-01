@@ -30,20 +30,30 @@ articles:
       - import-and-qa-weather
 
 reference:
-  - title: Data management
+  - title: Import & QA
     contents:
       - read_weather_csv
+      - normalize_weather_names
       - default_weather_mapping
       - validate_weather
+
+  - title: Gaps & Imputation
+    contents:
+      - complete_daily_calendar
+      - summarise_gaps
+      - impute_weather
+
   - title: Photoperiod
     contents:
       - daylength_f95
       - photoperiod_year
       - photoperiod_sites
+
   - title: Rainfall
     contents:
       - plot_rainfall
       - summarise_rainfall_monthly
-  - title: Data
+
+  - title: Shipped Data
     contents:
       - weather_nl

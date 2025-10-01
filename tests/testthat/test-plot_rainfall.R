@@ -1,9 +1,9 @@
 test_that("weather_nl dataset is available and well-formed", {
   data(weather_nl, package = "climecol")
-  expect_true(is.data.frame(weather_nl))
-  expect_true(all(c("Date", "Rain_mm") %in% names(weather_nl)))
-  expect_true(inherits(weather_nl$Date, "Date"))
-  expect_true(is.numeric(weather_nl$Rain_mm))
+  df <- normalize_weather_names(weather_nl)
+  expect_true(all(c("date", "rain_mm") %in% names(df)))
+  expect_true(inherits(df$date, "Date"))
+  expect_true(is.numeric(df$rain_mm) || is.integer(df$rain_mm))
 })
 
 test_that("plot_rainfall returns a ggplot object", {
@@ -13,8 +13,8 @@ test_that("plot_rainfall returns a ggplot object", {
 })
 
 test_that("plot_rainfall errors clearly when required columns are missing", {
-  df <- data.frame(Time = Sys.Date(), Value = 1)
-  expect_error(plot_rainfall(df), "Date|Rain_mm")
+  df <- tibble::tibble(x = 1:3, y = 2:4)
+  expect_error(plot_rainfall(df), regexp = "date|rain_mm")
 })
 
 test_that("plot_rainfall accepts character dates and coerces to Date", {

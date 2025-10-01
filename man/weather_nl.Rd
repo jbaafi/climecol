@@ -3,39 +3,54 @@
 \docType{data}
 \name{weather_nl}
 \alias{weather_nl}
-\title{Daily Weather Data for Newfoundland (2013–2023)}
+\title{Newfoundland daily weather example}
 \format{
-A data frame with 5844 rows and 10 columns:
+A tibble with the following columns:
 \describe{
-\item{Date}{Date of observation (Date)}
-\item{Year}{Calendar year (integer)}
-\item{Month}{Calendar month 1–12 (integer)}
-\item{Day}{Day of month 1–31 (integer)}
-\item{T_min_C}{Daily minimum temperature (°C, numeric)}
-\item{T_max_C}{Daily maximum temperature (°C, numeric)}
-\item{T_mean_C}{Daily mean temperature (°C, numeric)}
-\item{Rain_mm}{Daily rainfall (mm, numeric)}
-\item{Precip_mm}{Total precipitation (mm, numeric)}
-\item{Snow_cm}{Total snow (cm, numeric)}
+\item{date}{Date of observation (\code{Date}).}
+\item{tmin_c}{Minimum temperature in °C (numeric).}
+\item{tmax_c}{Maximum temperature in °C (numeric).}
+\item{tavg_c}{Mean temperature in °C (numeric).}
+\item{rain_mm}{Total rainfall in millimetres (numeric).}
+\item{precip_mm}{Total precipitation in millimetres (numeric).}
+\item{snow_cm}{Total snowfall in centimetres (numeric).}
+
+\item{Year}{Calendar year (integer).}
+\item{Month}{Calendar month (1–12, integer).}
+\item{Day}{Calendar day of month (1–31, integer).}
+
+\item{Station.Name}{Station name as provided by the source (character).}
+\item{Climate.ID}{Environment Canada climate station ID (character).}
+\item{station}{Canonical station key used by climecol functions
+(character). Typically set equal to \code{Station.Name} or
+\code{Climate.ID}.}
 }
 }
 \source{
-Environment and Climate Change Canada. (Add station name/ID here.)
+Environment and Climate Change Canada (ECCC) daily climate data.
 }
 \usage{
 weather_nl
 }
 \description{
-Curated daily fields (temperature, precipitation, snow) from Environment and
-Climate Change Canada, standardized for ecological modeling workflows.
+A curated daily weather dataset for a Newfoundland station, suitable for
+examples and vignettes. Columns are standardized to match the package's
+helper functions (e.g., \code{validate_weather()}, \code{complete_daily_calendar()}).
 }
 \details{
-Fields are curated from the raw ECCC station export. Values are as reported
-(no gap-filling); missing values are \code{NA}. Column names are standardized for
-use across \pkg{climecol} functions.
+This dataset follows the standardized column names expected by package
+utilities. In particular, downstream helpers assume \code{date} (lowercase) and
+\code{station} exist.
 }
 \examples{
 data(weather_nl)
-dplyr::glimpse(weather_nl)
+# Quick QA summary
+qa <- validate_weather(weather_nl)
+qa$summary
+
+# Make gaps explicit and summarise coverage
+cal <- complete_daily_calendar(weather_nl)
+summarise_gaps(cal, by = "station")
+
 }
 \keyword{datasets}

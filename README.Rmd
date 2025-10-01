@@ -49,6 +49,16 @@ qa$summary
 
 ```
 
+## Gap handling and imputation
+
+The package provides tools to handle gaps in weather records:
+
+- **`complete_daily_calendar()`** ensures a full daily date sequence per station, making gaps explicit.  
+- **`summarise_gaps()`** quantifies missingness, coverage, and longest contiguous gaps.  
+- **`impute_weather()`** offers lightweight fillers (last observation carried forward, linear, or spline).  
+
+Together, these helpers make it easy to prepare consistent daily time series for downstream climate-driven modeling.
+
 
 ## Photoperiod (daylength)
 

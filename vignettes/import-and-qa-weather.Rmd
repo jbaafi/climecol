@@ -48,7 +48,7 @@ The standardized schema produced by `read_weather_csv()` includes:
 
 ```{r}
 # Data shipped with the package:
-# data("weather_nl")
+#data("weather_nl")
 # head(weather_nl)
 ```
 
@@ -104,6 +104,130 @@ Once data pass QA, downstream functions can assume consistent columns:
 # usethis::use_data(wx, name = "weather_std_example", overwrite = TRUE)
 
 ```
+
+## Gaps and Imputation
+
+Real-world weather data almost always contain gaps due to missing observations, instrument downtime, or quality filtering.
+For climate- or ecology-driven models, consistent daily time series are essential.
+The package provides three lightweight helpers to support this workflow:
+
+
+```{r data-source, echo=TRUE, message=FALSE}
+# Use the package dataset so the vignette always builds reproducibly
+library(climecol)
+library(dplyr)
+
+data(weather_nl)
+
+# Normalize column names
+df <- normalize_weather_names(weather_nl)
+
+# Peek at columns (should include: date, station, tmin_c, tmax_c, tavg_c, rain_mm, precip_mm, snow_cm)
+dplyr::glimpse(df)
+
+```
+
+or we can also load data from a different source with the code format below
+
+```{r read-from-csv, eval=FALSE}
+# Example only — not run during vignette build:
+# wx <- read_weather_csv("data-raw/combined_data.csv")
+# wx <- read_weather_csv("~/Desktop/combined_data.csv")
+```
+
+1. **`complete_daily_calendar()`**
+   - Expands the date range for each station to cover the full period of record.
+   - Missing rows are inserted for absent days, flagged with `is_missing_row = TRUE`.
+   - This creates a consistent daily skeleton that downstream functions can rely on.
+
+```{r}
+df_cal <- complete_daily_calendar(df)
+head(df_cal, 10)
+```
+
+2. `summarise_gaps()`
+
+- Quantifies coverage per station (or station-month).
+
+- Reports number of days, number missing, proportion covered, count of gaps, and longest gap length.
+
+- Useful for quickly diagnosing where records are most complete or problematic.
+
+```{r}
+gap_by_station <- summarise_gaps(df_cal, by = "station")
+gap_by_month   <- summarise_gaps(df_cal, by = "month")
+
+# Show quick summaries
+gap_by_station
+head(gap_by_month, 6)
+```
+
+3. `impute_weather()`
+
+- Provides simple methods to fill missing values.
+
+- Options include:
+
+    - `"locf"`: last observation carried forward
+
+    - `"linear"`: straight-line interpolation
+
+    - `"spline"`: smooth spline interpolation
+
+- Each method makes different assumptions and should be documented clearly when used.
+
+```{r}
+df_imp <- impute_weather(
+  df_cal,
+  method = "linear",
+  cols   = c("tmax_c","tmin_c","tavg_c"),
+  max_gap = 7
+)
+
+# Inspect results
+head(df_cal, 8)
+head(df_imp, 8)
+```
+
+Example workflow
+
+```{r}
+library(climecol)
+
+# 1. Ensure calendar completeness
+df_cal <- complete_daily_calendar(df)
+
+# 2. Summarise gaps by station
+gap_summary <- summarise_gaps(df_cal)
+print(gap_summary)
+
+# 3. Fill missing values with linear interpolation
+df_imp <- impute_weather(df_cal, method = "linear")
+
+# Now df_imp can be used safely in climate-driven models
+
+```
+
+or if you want to load your own data, the workflow becomes
+
+```{r workflow-recap, echo=TRUE, eval=FALSE}
+# Typical workflow:
+# wx        <- read_weather_csv("path/to/raw.csv")
+# wx_cal    <- complete_daily_calendar(wx)
+# gaps      <- summarise_gaps(wx_cal, by = "station")
+# wx_imp    <- impute_weather(wx_cal, method = "linear", cols = c("tmax_c","tmin_c","tavg_c"), max_gap = 7)
+# qa_after  <- validate_weather(wx_imp)
+# qa_after$summary
+```
+
+### Notes and Caveats
+
+- These functions are *not* designed for climatological homogenization; they provide practical utilities for simulation-ready daily data.
+
+- Gap imputation introduces uncertainty; users should document choices and, where possible, conduct sensitivity analyses.
+
+- For critical applications (e.g., climate trend estimation), consider specialized homogenization tools outside this package.
+
 
 
 
