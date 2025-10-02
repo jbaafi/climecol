@@ -43,16 +43,17 @@ reference:
       - summarise_gaps
       - impute_weather
 
+  - title: Summaries & Seasonal Fits
+    contents:
+      - summarise_rainfall_monthly
+      - plot_rainfall
+      - fit_seasonal_temp
+
   - title: Photoperiod
     contents:
       - daylength_f95
       - photoperiod_year
       - photoperiod_sites
-
-  - title: Rainfall
-    contents:
-      - plot_rainfall
-      - summarise_rainfall_monthly
 
   - title: Shipped Data
     contents:

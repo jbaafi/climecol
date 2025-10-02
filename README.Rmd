@@ -13,6 +13,13 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r pkg-setup, echo=FALSE, message=FALSE}
+if (Sys.getenv("CI") == "" && requireNamespace("devtools", quietly = TRUE)) {
+  devtools::load_all(quiet = TRUE)
+}
+library(climecol)
+```
+
 # `climecol`
 
 <!-- badges: start -->
@@ -134,6 +141,22 @@ plot_rainfall(weather_nl)
 ```
 
 > This figure was generated when knitting this README.  
+
+### Seasonal temperature fitting
+
+```{r}
+data(weather_nl)
+res <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"), plot = TRUE)
+res$metrics
+#> # A tibble: 2 x 3
+#>   model   AIC    R2
+#>   <chr> <dbl> <dbl>
+#> 1 sin1   ...   ...
+#> 2 sin2   ...   ...
+
+# plot overlay (observed vs fitted)
+res$plot
+```
 
 ## Contributing
 

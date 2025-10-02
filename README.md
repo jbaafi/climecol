@@ -199,6 +199,29 @@ plot_rainfall(weather_nl)
 
 > This figure was generated when knitting this README.
 
+### Seasonal temperature fitting
+
+``` r
+data(weather_nl)
+res <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"), plot = TRUE)
+res$metrics
+#> # A tibble: 2 × 3
+#>   model   AIC    R2
+#>   <chr> <dbl> <dbl>
+#> 1 sin1  1204. 0.971
+#> 2 sin2  1159. 0.975
+#> # A tibble: 2 x 3
+#>   model   AIC    R2
+#>   <chr> <dbl> <dbl>
+#> 1 sin1   ...   ...
+#> 2 sin2   ...   ...
+
+# plot overlay (observed vs fitted)
+res$plot
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
 ## Contributing
 
 Issues and pull requests are welcome via the repo’s [issue

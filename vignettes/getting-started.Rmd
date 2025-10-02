@@ -190,10 +190,24 @@ out_file
 
 > The file is written to a temporary folder during vignette build. Replace tempdir() with your project path in real workflows.
 
-
 > **Reference**  
 > Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., & Schoolfield, R. M. (1995).  
 > *A model comparison for daylength as a function of latitude and day of year.* Ecological Modelling, 80, 87–95.
+
+
+### Seasonal climatology: sinusoidal fits
+
+```{r}
+library(climecol)
+
+data(weather_nl)
+fit_out <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"), plot = TRUE)
+
+knitr::kable(fit_out$metrics, digits = 3, caption = "Model comparison by AIC and R²")
+
+if (!is.null(fit_out$plot)) fit_out$plot
+```
+
 
 Session info
 

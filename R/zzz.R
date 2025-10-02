@@ -10,7 +10,11 @@
 
 utils::globalVariables(c(
   "n_days",
-  "n_missing"
+  "n_missing",
+  "day_of_year",
+  "mean_temp",
+  "fitted_sin1",
+  "fitted_sin2"
 ))
 
 # If future NSE notes appear, add their symbols here, e.g.:
