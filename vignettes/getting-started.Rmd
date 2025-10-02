@@ -189,7 +189,6 @@ out_file
 ```
 
 > The file is written to a temporary folder during vignette build. Replace tempdir() with your project path in real workflows.
-
 > **Reference**  
 > Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., & Schoolfield, R. M. (1995).  
 > *A model comparison for daylength as a function of latitude and day of year.* Ecological Modelling, 80, 87–95.
