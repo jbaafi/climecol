@@ -1,4 +1,4 @@
-# climecol (development version)
+# climecol 0.1.4
 
 # climecol 0.1.4 (2025-10-02)
 

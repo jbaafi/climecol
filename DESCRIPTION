@@ -1,6 +1,6 @@
 Package: climecol
 Title: Climate and Weather Data Tools for Ecological Modeling
-Version: 0.1.3.9000
+Version: 0.1.4
 Authors@R: 
     person(given = "Joseph", family = "Baafi",
            email = "jbaafi@mun.ca",
