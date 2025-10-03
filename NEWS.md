@@ -1,15 +1,9 @@
-# climecol 0.1.4
-
 # climecol 0.1.4 (2025-10-02)
 
 ## New
 - Added `fit_seasonal_temp()` to fit seasonal temperature curves to day-of-year means using sinusoidal models, 
 returning AIC and R², with an optional plot overlay.
 
-
-# climecol 0.1.3
-
-# climecol 0.1.2
 
 # climecol 0.1.3 (2025-10-01)
 
