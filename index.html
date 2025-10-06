@@ -254,6 +254,42 @@
 </div>
 </div>
 <div class="section level2">
+<h2 id="custom-seasonal-temperature-models">Custom seasonal temperature models<a class="anchor" aria-label="anchor" href="#custom-seasonal-temperature-models"></a>
+</h2>
+<p>In addition to the built-in sinusoidal models (<code>sin1</code>, <code>cos1</code>, etc.), you can also pass your own formula to <code><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp()</a></code> via the <code>funcs</code> argument.</p>
+<p>For example, suppose we define our custom function:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Standardize column names</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Define your custom model (formula uses mean_temp ~ ... and day_of_year)</span></span>
+<span><span class="va">custom_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  quad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    formula <span class="op">=</span> <span class="va">mean_temp</span> <span class="op">~</span> <span class="va">a</span> <span class="op">+</span> <span class="va">b</span> <span class="op">*</span> <span class="va">day_of_year</span> <span class="op">+</span> <span class="va">c</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">day_of_year</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>    start   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">tavg_c</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, b <span class="op">=</span> <span class="fl">0</span>, c <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>  <span class="co"># &lt;- REQUIRED</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fit: built-ins via `funcs=`, user models via `custom=`</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span></span>
+<span>  <span class="va">df</span>,</span>
+<span>  funcs  <span class="op">=</span> <span class="st">"sin1"</span>,     <span class="co"># optional: keep a built-in for comparison</span></span>
+<span>  custom <span class="op">=</span> <span class="va">custom_models</span>,</span>
+<span>  plot   <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 5) Results</span></span>
+<span><span class="va">res</span><span class="op">$</span><span class="va">metrics</span>   <span class="co"># AIC and R2 per model</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span><span class="co">#&gt;   model   AIC    R2</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 sin1  1204. 0.971</span></span>
+<span><span class="co">#&gt; 2 quad  1984. 0.758</span></span>
+<span><span class="va">res</span><span class="op">$</span><span class="va">plot</span>      <span class="co"># overlay plot</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
+</div>
+<div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>Issues and pull requests are welcome via the repo’s <a href="https://github.com/jbaafi/climecol/issues" class="external-link">issue tracker</a>.</p>
