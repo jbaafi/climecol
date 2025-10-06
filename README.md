@@ -222,6 +222,47 @@ res$plot
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
+## Custom seasonal temperature models
+
+In addition to the built-in sinusoidal models (`sin1`, `cos1`, etc.),
+you can also pass your own formula to `fit_seasonal_temp()` via the
+`funcs` argument.
+
+For example, suppose we define our custom function:
+
+``` r
+#Standardize column names
+
+df <- normalize_weather_names(weather_nl)
+
+# Define your custom model (formula uses mean_temp ~ ... and day_of_year)
+custom_models <- list(
+  quad = list(
+    formula = mean_temp ~ a + b * day_of_year + c * I(day_of_year^2),
+    start   = list(a = mean(df$tavg_c, na.rm = TRUE), b = 0, c = 0)  # <- REQUIRED
+  )
+)
+
+# Fit: built-ins via `funcs=`, user models via `custom=`
+res <- fit_seasonal_temp(
+  df,
+  funcs  = "sin1",     # optional: keep a built-in for comparison
+  custom = custom_models,
+  plot   = TRUE
+)
+
+# 5) Results
+res$metrics   # AIC and R2 per model
+#> # A tibble: 2 × 3
+#>   model   AIC    R2
+#>   <chr> <dbl> <dbl>
+#> 1 sin1  1204. 0.971
+#> 2 quad  1984. 0.758
+res$plot      # overlay plot
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+
 ## Contributing
 
 Issues and pull requests are welcome via the repo’s [issue

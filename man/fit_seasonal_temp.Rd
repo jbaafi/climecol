@@ -4,41 +4,66 @@
 \alias{fit_seasonal_temp}
 \title{Fit seasonal temperature curve}
 \usage{
-fit_seasonal_temp(df, funcs = c("sin1", "sin2"), plot = FALSE)
+fit_seasonal_temp(df, funcs = c("sin1", "sin2"), custom = NULL, plot = FALSE)
 }
 \arguments{
-\item{df}{A data frame with column \code{date} and either \code{tavg_c} or both \code{tmin_c} and \code{tmax_c}.}
+\item{df}{Data frame with column \code{date} and either \code{tavg_c} or both
+\code{tmin_c} and \code{tmax_c}.}
 
-\item{funcs}{Character vector of models to fit. Options are:
+\item{funcs}{Character vector of built-in models to fit. Options:
 \itemize{
 \item "sin1": \eqn{a + b_1 \sin(2\pi t / 365) + b_2 \cos(2\pi t / 365)}
 \item "sin2": \eqn{T_0 \left(1 + T_1 \cos(2\pi(\omega t + \theta)/365)\right)}
 }}
 
-\item{plot}{Logical; if TRUE, include a ggplot overlay of observed vs. fitted curves.}
+\item{custom}{Named list of user models. Each element should be a list with:
+\itemize{
+\item \code{formula}: an \code{nls} formula using variables \code{mean_temp} (response) and
+\code{day_of_year} (predictor) defined by this function.
+\item \code{start}: a named list of starting parameters for \code{nls()}.
+Example:
+\code{custom = list(cos1 = list( formula = mean_temp ~ a + b * cos(2*pi*day_of_year/365), start   = list(a = 0, b = 10)))}
+}}
+
+\item{plot}{Logical; if TRUE, include a ggplot overlay of observed vs. fitted.}
 }
 \value{
 A list with:
 \describe{
-\item{daily_avg}{tibble of day-of-year (\code{day_of_year}), observed \code{mean_temp}, and fitted columns.}
-\item{fits}{list of \code{nls} fit objects for each model.}
-\item{metrics}{tibble with \code{model}, \code{AIC}, and \code{R2} per fit.}
+\item{daily_avg}{tibble of day-of-year (\code{day_of_year}), observed \code{mean_temp},
+and one column per fitted model (\verb{fitted_<name>}).}
+\item{fits}{list of \code{nls} fit objects (only the ones that converged).}
+\item{metrics}{tibble with \code{model}, \code{AIC}, and \code{R2} per converged fit.}
 \item{plot}{ggplot object (present when \code{plot = TRUE}).}
 }
 }
 \description{
-Fits sinusoidal/periodic models to the mean daily temperature cycle (averaged across years).
-Returns fitted objects, AIC and R^2 metrics, and an optional plot overlay.
+Fits sinusoidal/periodic models to the mean daily temperature cycle
+(averaged across years). Supports built-ins ("sin1","sin2") and arbitrary
+user-defined \code{nls()} models.
 }
 \details{
-The function aggregates input to daily means by day-of-year across all years,
-then fits each requested model with \code{nls}. R^2 is computed as 1 - SS_res/SS_tot
-on the aggregated series.
+Data are aggregated to day-of-year means across all years, then each model is
+fit with \code{nls()}. R^2 is computed as 1 - SS_res/SS_tot on the aggregated series.
+User formulas must reference \code{mean_temp} (lhs) and \code{day_of_year} (rhs).
 }
 \examples{
 data(weather_nl)
+# Built-ins
 res <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"), plot = TRUE)
 res$metrics
-if (!is.null(res$plot)) print(res$plot)
 
+# Add a user-defined cosine model
+res2 <- fit_seasonal_temp(
+  weather_nl,
+  funcs = "sin1",
+  custom = list(
+    cos1 = list(
+      formula = mean_temp ~ a + b * cos(2*pi*day_of_year/365),
+      start   = list(a = mean(weather_nl$tavg_c, na.rm = TRUE), b = 5)
+    )
+  ),
+  plot = TRUE
+)
+res2$metrics
 }

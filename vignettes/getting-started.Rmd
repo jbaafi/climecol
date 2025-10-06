@@ -208,6 +208,41 @@ if (!is.null(fit_out$plot)) fit_out$plot
 ```
 
 
+## Extending seasonal temperature fitting with custom models
+
+The function `fit_seasonal_temp()` supports user-defined formulas. 
+This is useful when you want to test functional forms beyond the built-in
+sinusoidal models.
+
+For example, suppose we define our custom function:
+
+```{r}
+#Standardize column names
+
+df <- normalize_weather_names(weather_nl)
+
+# Define your custom model (formula uses mean_temp ~ ... and day_of_year)
+custom_models <- list(
+  quad = list(
+    formula = mean_temp ~ a + b * day_of_year + c * I(day_of_year^2),
+    start   = list(a = mean(df$tavg_c, na.rm = TRUE), b = 0, c = 0)  # <- REQUIRED
+  )
+)
+
+# Fit: built-ins via `funcs=`, user models via `custom=`
+res <- fit_seasonal_temp(
+  df,
+  funcs  = "sin1",     # optional: keep a built-in for comparison
+  custom = custom_models,
+  plot   = TRUE
+)
+
+# 5) Results
+res$metrics   # AIC and R2 per model
+res$plot      # overlay plot
+
+```
+
 Session info
 
 ```{r session-info, eval=FALSE}
