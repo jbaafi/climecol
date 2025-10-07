@@ -333,7 +333,7 @@ names):</p>
 <code class="sourceCode R"><span><span class="va">out_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"photoperiod_st_johns_2024.csv"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">pp_nl</span>, <span class="va">out_file</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out_file</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpvvbqO1/photoperiod_st_johns_2024.csv"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/Rtmpb2V7sD/photoperiod_st_johns_2024.csv"</span></span></code></pre></div>
 <blockquote>
 <p>The file is written to a temporary folder during vignette build.
 Replace tempdir() with your project path in real workflows.
@@ -416,9 +416,51 @@ the built-in sinusoidal models.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> quad  <span style="text-decoration: underline;">1</span>984. 0.758</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">plot</span>      <span class="co"># overlay plot</span></span></code></pre></div>
 <p><img src="getting-started_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
-<p>Session info</p>
+<div class="section level3">
+<h3 id="seasonal-photoperiod-fitting">Seasonal photoperiod fitting<a class="anchor" aria-label="anchor" href="#seasonal-photoperiod-fitting"></a>
+</h3>
+<p>We can estimate a smooth periodic curve of photoperiod (hours of
+daylight) by averaging day-of-year across multiple years, and then
+fitting simple sinusoidal functions using nonlinear least squares.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_seasonal_photo.html">fit_seasonal_photo</a></span><span class="op">(</span></span>
+<span>  location <span class="op">=</span> <span class="st">"St John's"</span>,</span>
+<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">2024</span><span class="op">)</span>,</span>
+<span>  funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">res</span><span class="op">$</span><span class="va">metrics</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 3</span></span></span>
+<span><span class="co">#&gt;   model   AIC    R2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> sin1  -<span style="color: #BB0000;">934.</span> 0.999</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> sin2  -<span style="color: #BB0000;">943.</span> 0.999</span></span>
+<span><span class="va">res</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+<p>Custom models are also supported by passing a named list of formula
+and start:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res_custom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_seasonal_photo.html">fit_seasonal_photo</a></span><span class="op">(</span></span>
+<span>  location <span class="op">=</span> <span class="st">"St John's"</span>,</span>
+<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">2024</span><span class="op">)</span>,</span>
+<span>  funcs <span class="op">=</span> <span class="st">"sin1"</span>,</span>
+<span>  custom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    cos1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      formula <span class="op">=</span> <span class="va">avg_photo</span> <span class="op">~</span> <span class="va">a</span> <span class="op">+</span> <span class="va">b</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="va">day_of_year</span><span class="op">/</span><span class="fl">365</span><span class="op">)</span>,</span>
+<span>      start   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">12</span>, b <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">res_custom</span><span class="op">$</span><span class="va">metrics</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 3</span></span></span>
+<span><span class="co">#&gt;   model   AIC    R2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> sin1  -<span style="color: #BB0000;">934.</span> 0.999</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> cos1   495. 0.967</span></span></code></pre></div>
+<p>Session info</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
