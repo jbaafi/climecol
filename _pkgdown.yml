@@ -29,6 +29,10 @@ articles:
     contents:
       - import-and-qa-weather
 
+  - title: Seasonal Climate Fits
+    contents:
+      - seasonal-climate-fits
+
 reference:
   - title: Import & QA
     contents:

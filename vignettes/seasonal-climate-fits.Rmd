@@ -1,0 +1,98 @@
+---
+title: "seasonal-climate-fits"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{seasonal-climate-fits}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(climecol)
+library(ggplot2)
+```
+
+🌤️ Seasonal Climate Fits
+
+Many ecological and epidemiological models benefit from representing climate variables—such as temperature and photoperiod—as smooth periodic functions.
+
+climecol provides two complementary utilities for this purpose:
+
+- fit_seasonal_temp() – fits sinusoidal or user-defined periodic models to mean daily temperature, averaged across years.
+- fit_seasonal_photo() – fits similar models to daylength (photoperiod) data, either supplied directly or generated via photoperiod_year().
+
+Both functions:
+
+- Aggregate daily data by day-of-year and compute the mean seasonal cycle.
+- Fit one or more parametric periodic functions using nls().
+- Return AIC and R² metrics to compare goodness of fit.
+- Optionally plot observed versus fitted cycles.
+	
+Example 1 — Fitting temperature cycles
+
+```{r}
+res_temp <- fit_seasonal_temp(
+  weather_nl,
+  funcs = c("sin1", "sin2"),
+  plot  = TRUE
+)
+res_temp$metrics
+res_temp$plot
+```
+
+Example 2 — Fitting photoperiod cycles
+
+```{r}
+res_photo <- fit_seasonal_photo(
+  location = "St John's",
+  years    = c(2023, 2024),
+  funcs    = c("sin1", "sin2"),
+  plot     = TRUE
+)
+res_photo$metrics
+res_photo$plot
+```
+
+Example 3 — Supplying a custom periodic model
+
+```{r}
+res_photo_custom <- fit_seasonal_photo(
+  location = "St John's",
+  years = c(2023, 2024),
+  funcs = "sin1",
+  custom = list(
+    cos1 = list(
+      formula = avg_photo ~ a + b * cos(2*pi*day_of_year/365),
+      start   = list(a = 12, b = 6)
+    )
+  ),
+  plot = TRUE
+)
+res_photo_custom$metrics
+```
+
+| Function | Input data | Built-in models | Custom models | Output |
+|-----------|-------------|----------------|----------------|---------|
+| `fit_seasonal_temp()` | Daily mean temperature | `sin1`, `sin2` | ✓ supported | Seasonal mean curve, AIC, R², optional plot |
+| `fit_seasonal_photo()` | Photoperiod (hours) | `sin1`, `sin2` | ✓ supported | Seasonal mean curve, AIC, R², optional plot |
+
+
+Suggested applications
+
+- Representing smooth seasonal forcing in climate-driven mosquito or disease models.
+- Comparing interannual variation in fitted parameters.
+- Generating climatological “templates” for simulation studies.
+
+
+
+
+
+
+
