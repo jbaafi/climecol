@@ -4,7 +4,8 @@ pkgdown_sha: ~
 articles:
   getting-started: getting-started.html
   import-and-qa-weather: import-and-qa-weather.html
-last_built: 2025-10-07T01:11Z
+  seasonal-climate-fits: seasonal-climate-fits.html
+last_built: 2025-10-07T01:38Z
 urls:
   reference: https://jbaafi.github.io/climecol/reference
   article: https://jbaafi.github.io/climecol/articles
