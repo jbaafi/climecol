@@ -16,7 +16,8 @@ utils::globalVariables(c(
   "fitted_sin1",
   "fitted_sin2",
   "fitted",
-  "model"
+  "model",
+  "avg_photo"
 ))
 
 # If future NSE notes appear, add their symbols here, e.g.:

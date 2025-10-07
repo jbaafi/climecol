@@ -134,6 +134,41 @@ dplyr::glimpse(weather_nl)
 
 ```
 
+
+## Photoperiod fits (seasonal curve)
+
+```{r}
+# Option A: generate photoperiod from a location for two years and fit
+res <- fit_seasonal_photo(location = "St John's",
+                          years = c(2023, 2024),
+                          funcs = c("sin1","sin2"),
+                          plot = TRUE)
+res$metrics
+if (!is.null(res$plot)) print(res$plot)
+
+# Option B: provide your own photoperiod data frame
+# df <- data.frame(date = as.Date("2023-01-01") + 0:729,
+#                  photoperiod_hours = 12 + 6*cos(2*pi*(1:730)/365))
+# fit_seasonal_photo(df = df, funcs = "sin1", plot = TRUE)
+
+# Custom model example
+res2 <- fit_seasonal_photo(
+  location = "St John's",
+  years = c(2023, 2024),
+  funcs = "sin1",
+  custom = list(
+    cos1 = list(
+      formula = avg_photo ~ a + b * cos(2*pi*day_of_year/365),
+      start   = list(a = 12, b = 6)
+    )
+  )
+)
+res2$metrics
+
+```
+
+## Rainfall data
+
 Plot daily rainfall:
 
 ```{r rainfall-plot, message=FALSE, warning=FALSE}
@@ -191,6 +226,7 @@ res$metrics   # AIC and R2 per model
 res$plot      # overlay plot
 
 ```
+
 
 
 ## Contributing

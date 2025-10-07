@@ -48,6 +48,7 @@ reference:
       - summarise_rainfall_monthly
       - plot_rainfall
       - fit_seasonal_temp
+      - fit_seasonal_photo
 
   - title: Photoperiod
     contents:

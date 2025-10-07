@@ -189,6 +189,54 @@ dplyr::glimpse(weather_nl)
 #> $ station      <chr> "ST JOHN'S A", "ST JOHN'S A", "ST JOHN'S A", "ST JOHN'S A…
 ```
 
+## Photoperiod fits (seasonal curve)
+
+``` r
+# Option A: generate photoperiod from a location for two years and fit
+res <- fit_seasonal_photo(location = "St John's",
+                          years = c(2023, 2024),
+                          funcs = c("sin1","sin2"),
+                          plot = TRUE)
+res$metrics
+#> # A tibble: 2 × 3
+#>   model   AIC    R2
+#>   <chr> <dbl> <dbl>
+#> 1 sin1  -934. 0.999
+#> 2 sin2  -943. 0.999
+if (!is.null(res$plot)) print(res$plot)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+``` r
+
+# Option B: provide your own photoperiod data frame
+# df <- data.frame(date = as.Date("2023-01-01") + 0:729,
+#                  photoperiod_hours = 12 + 6*cos(2*pi*(1:730)/365))
+# fit_seasonal_photo(df = df, funcs = "sin1", plot = TRUE)
+
+# Custom model example
+res2 <- fit_seasonal_photo(
+  location = "St John's",
+  years = c(2023, 2024),
+  funcs = "sin1",
+  custom = list(
+    cos1 = list(
+      formula = avg_photo ~ a + b * cos(2*pi*day_of_year/365),
+      start   = list(a = 12, b = 6)
+    )
+  )
+)
+res2$metrics
+#> # A tibble: 2 × 3
+#>   model   AIC    R2
+#>   <chr> <dbl> <dbl>
+#> 1 sin1  -934. 0.999
+#> 2 cos1   495. 0.967
+```
+
+## Rainfall data
+
 Plot daily rainfall:
 
 ``` r
@@ -220,7 +268,7 @@ res$metrics
 res$plot
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ## Custom seasonal temperature models
 
@@ -261,7 +309,7 @@ res$metrics   # AIC and R2 per model
 res$plot      # overlay plot
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ## Contributing
 

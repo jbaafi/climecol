@@ -1,3 +1,8 @@
+# climecol 0.1.5 (2025-10-06)
+- Added `fit_seasonal_photo()` to fit and visualise periodic photoperiod cycles.
+- Supports built-in sinusoidal models (`sin1`, `sin2`) and custom user-defined formulas.
+- Includes AIC and R² reporting, plus optional plots for visual diagnostics.
+
 # climecol 0.1.4 (2025-10-02)
 
 ## New
