@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climecol</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,32 @@
       <small>Source: <a href="https://github.com/jbaafi/climecol/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.6" id="climecol-016">climecol 0.1.6<a class="anchor" aria-label="anchor" href="#climecol-016"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-1-6">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-6"></a></h3>
+<ul><li>
+<p>Added <strong><code><a href="../reference/sample_rainfall_by_month.html">sample_rainfall_by_month()</a></code></strong>, a new stochastic rainfall sampler that<br>
+generates daily rainfall time series while preserving monthly seasonality.<br>
+This function resamples observed daily rainfall from the same calendar month<br>
+across years, maintaining the empirical wet/dry distribution without assuming<br>
+any specific statistical model.</p>
+<ul><li>Works directly with the built-in <code>weather_nl</code> dataset or user-supplied data.<br></li>
+<li>Automatically detects rainfall columns (<code>rain_mm</code>, <code>precip_mm</code>, etc.) and<br>
+standardizes variable names using <code><a href="../reference/normalize_weather_names.html">normalize_weather_names()</a></code>.<br></li>
+<li>Supports reproducible sampling via <code>seed</code> and numeric or <code>Date</code> input.<br></li>
+<li>Includes optional parameters for handling missing data (<code>drop_na</code>, <code>na_as_zero</code>).</li>
+</ul></li>
+<li><p>Added a new vignette <strong>“Stochastic Daily Rainfall Sampling”</strong> demonstrating<br>
+realistic daily rainfall simulation for ecological or population models.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-1-6">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-6"></a></h3>
+<ul><li>Updated <strong>README</strong> with an example section on rainfall sampling and plotting.<br></li>
+<li>Expanded <strong>testthat</strong> coverage to validate reproducibility, month pooling,<br>
+and robustness to varying input column names.</li>
+</ul><hr></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.5" id="climecol-015-2025-10-06">climecol 0.1.5 (2025-10-06)<a class="anchor" aria-label="anchor" href="#climecol-015-2025-10-06"></a></h2>
 <ul><li>Added <code><a href="../reference/fit_seasonal_photo.html">fit_seasonal_photo()</a></code> to fit and visualise periodic photoperiod cycles.</li>

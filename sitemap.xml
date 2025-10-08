@@ -6,6 +6,7 @@
 <url><loc>https://jbaafi.github.io/climecol/articles/import-and-qa-weather.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/articles/index.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/articles/seasonal-climate-fits.html</loc></url>
+<url><loc>https://jbaafi.github.io/climecol/articles/stochastic_rainfall.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/authors.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/index.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/news/index.html</loc></url>
@@ -22,6 +23,7 @@
 <url><loc>https://jbaafi.github.io/climecol/reference/photoperiod_year.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/reference/plot_rainfall.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/reference/read_weather_csv.html</loc></url>
+<url><loc>https://jbaafi.github.io/climecol/reference/sample_rainfall_by_month.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/reference/summarise_gaps.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/reference/summarise_rainfall_monthly.html</loc></url>
 <url><loc>https://jbaafi.github.io/climecol/reference/validate_weather.html</loc></url>
