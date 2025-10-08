@@ -1,3 +1,30 @@
+# climecol 0.1.6
+
+## New features
+
+* Added **`sample_rainfall_by_month()`**, a new stochastic rainfall sampler that  
+  generates daily rainfall time series while preserving monthly seasonality.  
+  This function resamples observed daily rainfall from the same calendar month  
+  across years, maintaining the empirical wet/dry distribution without assuming  
+  any specific statistical model.
+
+  - Works directly with the built-in `weather_nl` dataset or user-supplied data.  
+  - Automatically detects rainfall columns (`rain_mm`, `precip_mm`, etc.) and  
+    standardizes variable names using `normalize_weather_names()`.  
+  - Supports reproducible sampling via `seed` and numeric or `Date` input.  
+  - Includes optional parameters for handling missing data (`drop_na`, `na_as_zero`).
+
+* Added a new vignette **“Stochastic Daily Rainfall Sampling”** demonstrating  
+  realistic daily rainfall simulation for ecological or population models.
+
+## Improvements
+
+* Updated **README** with an example section on rainfall sampling and plotting.  
+* Expanded **testthat** coverage to validate reproducibility, month pooling,  
+  and robustness to varying input column names.
+
+---
+
 # climecol 0.1.5 (2025-10-06)
 - Added `fit_seasonal_photo()` to fit and visualise periodic photoperiod cycles.
 - Supports built-in sinusoidal models (`sin1`, `sin2`) and custom user-defined formulas.

@@ -1,0 +1,95 @@
+---
+title: "Stochastic Rainfall"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{stochastic_rainfall}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(climecol)
+library(ggplot2)
+set.seed(7)
+```
+
+## Purpose
+
+In many ecological and climate-driven models, rainfall is a highly variable input
+that exhibits strong monthly seasonality but weak daily autocorrelation.
+To preserve this seasonality while introducing stochastic variability, the function
+`sample_rainfall_by_month()` resamples daily rainfall values from the same
+calendar month across multiple observed years.
+
+This approach maintains each month’s empirical rainfall distribution — including
+the fraction of dry days — and generates realistic synthetic daily rainfall series
+for use in simulation models.
+
+Example
+
+```{r}
+data(weather_nl)
+
+# Define the simulation period
+dates <- seq.Date(as.Date("2014-09-01"), by = "day", length.out = 30)
+
+# Sample stochastic rainfall from monthly distributions
+rain_sim <- sample_rainfall_by_month(dates, weather_nl)
+
+# Combine with dates for inspection
+rain_df <- data.frame(date = dates, rain_sim_mm = rain_sim)
+head(rain_df, 10)
+```
+
+Visualization
+
+```{r}
+ggplot(rain_df, aes(x = date, y = rain_sim_mm)) +
+  geom_col(fill = "steelblue", width = 0.8) +
+  labs(title = "Stochastic daily rainfall sampled by month",
+       x = "Date", y = "Rainfall (mm)") +
+  theme_minimal(base_size = 14)
+```
+
+
+Notes
+
+-	Preserves seasonality: sampling pools are month-specific.
+-	Dry-day frequency: automatically preserved via empirical distributions.
+-	Reproducibility: use seed for consistent output.
+-	Flexible input: accepts Date or numeric day offsets (with origin).
+-	Supports arbitrary column names: tries to standardize via normalize_weather_names().
+
+Reproducibility check
+
+```{r}
+# Run twice with same seed — identical results
+sim1 <- sample_rainfall_by_month(dates, weather_nl, seed = 101)
+sim2 <- sample_rainfall_by_month(dates, weather_nl, seed = 101)
+identical(sim1, sim2)
+```
+
+This workflow provides a lightweight, nonparametric way to propagate
+hydroclimatic variability into climate or population dynamics models.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

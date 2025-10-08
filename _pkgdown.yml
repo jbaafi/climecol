@@ -33,6 +33,10 @@ articles:
     contents:
       - seasonal-climate-fits
 
+  - title: Stochastic Daily Rainfall Sampling
+    contents:
+      - stochastic_rainfall
+
 reference:
   - title: Import & QA
     contents:
@@ -53,6 +57,7 @@ reference:
       - plot_rainfall
       - fit_seasonal_temp
       - fit_seasonal_photo
+      - sample_rainfall_by_month
 
   - title: Photoperiod
     contents:

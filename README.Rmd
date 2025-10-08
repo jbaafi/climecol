@@ -228,6 +228,38 @@ res$plot      # overlay plot
 ```
 
 
+## Stochastic Rainfall Sampling by Month
+
+The function `sample_rainfall_by_month()` generates a stochastic **daily rainfall time series**
+while preserving the **monthly seasonality** observed in the historical record.  
+This allows you to produce rainfall inputs for simulation models that retain realistic
+wet/dry season structure without imposing a statistical distribution.
+
+
+```{r rainfall-sampler, message=FALSE}
+library(climecol)
+data(weather_nl)
+
+# Define target dates to simulate
+set.seed(123)
+dates <- seq.Date(as.Date("2012-01-01"), as.Date("2012-01-15"), by = "day")
+
+# Sample synthetic daily rainfall using historical monthly pools
+rain_sim <- sample_rainfall_by_month(dates, weather_nl)
+
+# Preview
+head(data.frame(date = dates, rain_sim_mm = rain_sim), 10)
+```
+
+```{r}
+plot(dates, rain_sim, type = "h", lwd = 3,
+     xlab = "Date", ylab = "Simulated rainfall (mm)",
+     main = "Daily rainfall sampled by month")
+```
+
+The sampled values are drawn from the same-month historical rainfall distribution,
+so wet and dry months retain their distinct variability patterns.
+
 
 ## Contributing
 
