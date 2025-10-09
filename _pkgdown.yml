@@ -37,6 +37,10 @@ articles:
     contents:
       - stochastic_rainfall
 
+  - title: Data Export
+    contents:
+      - export_weather
+
 reference:
   - title: Import & QA
     contents:
@@ -66,6 +70,10 @@ reference:
       - daylength_f95
       - photoperiod_year
       - photoperiod_sites
+
+  - title: Data export and reproducibility
+    contents:
+      - export_weather
 
   - title: Shipped Data
     contents:

@@ -1,0 +1,117 @@
+---
+title: "Exporting Weather Data with Metadata"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{saving_processed_data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Why export_weather()?
+
+Reproducible modeling hinges on data + context. A plain CSV written via write.csv() or readr::write_csv() captures the values, but not the provenance: Which station? Which scenario (baseline, +2°C, “wet”)? Which package/version produced it? When was it generated?
+
+export_weather() is a tiny wrapper around CSV writing that automatically prepends commented header lines with metadata. Those lines are ignored by typical CSV readers but remain human-readable and machine-parsable, so your exported files are self-describing and citable months or years later.
+
+What it adds beyond `write.csv()/write_csv()`:
+- A standardized header (lines prefixed with # ) including:
+  - package (e.g., climecol 0.1.6)
+  - date (UTC date the file was generated)
+  - Any custom fields you supply: station, scenario, source, etc.
+-	Sensible overwrite behavior (guardrails).
+-	Works with any data frame/tibble that your workflow produces (observed, imputed, simulated, scenario-based).
+
+
+Quick start
+
+```{r}
+```{r}
+library(climecol)
+library(readr)
+library(dplyr)
+
+# Example data shipped with the package
+data(weather_nl)
+
+# Portable output path for vignettes/CI
+out <- file.path(tempdir(), "processed_weather_data.csv")
+
+export_weather(
+  weather_nl,
+  path = out,
+  meta = list(
+    station  = "St. John's, NL",
+    scenario = "baseline",
+    source   = "climecol::weather_nl"
+  )
+)
+
+# Peek at the header (first ~8 lines)
+readLines(out, n = 8)
+```
+
+You’ll see something like:
+
+```{r, eval=FALSE}
+# Weather data export
+# package: climecol 0.1.x
+# date: 2025-10-09
+# station: St. John's, NL
+# scenario: baseline
+# source: climecol::weather_nl
+# date,year,month,day,tmin_c,tmax_c,tavg_c,rain_mm,precip_mm,snow_cm,Station.Name,Climate.ID,station
+...
+```
+
+### Reading the data back
+
+Because the header lines start with #, most readers skip them automatically.
+You can read the CSV as usual:
+
+```{r}
+dat <- readr::read_csv(out, show_col_types = FALSE)
+dplyr::glimpse(dat)
+```
+
+If you also want the metadata header as a named list, use this tiny helper:
+
+```{r}
+read_export_header <- function(path) {
+  con <- file(path, "rt"); on.exit(close(con))
+  hdr <- character()
+  repeat {
+    line <- readLines(con, n = 1)
+    if (length(line) == 0L) break
+    if (!startsWith(line, "#")) break
+    hdr <- c(hdr, sub("^#\\s?", "", line))
+  }
+  kv <- hdr[grepl(".+?:\\s", hdr)]
+  parts <- strsplit(kv, ":\\s+", perl = TRUE)
+  stats::setNames(lapply(parts, `[`, 2L), vapply(parts, `[`, "", 1L))
+}
+
+meta <- read_export_header(out)
+meta
+```
+
+
+### Why not just write.csv()?
+
+- `write.csv()` gives you values only.
+- `export_weather()` gives you values + context (station, scenario, date, package version) inside the file itself.
+
+That’s what makes your exports reproducible, citable, and self-describing, essential for long-term modeling workflows.
+
+
+
+
+
+

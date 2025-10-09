@@ -2,7 +2,7 @@
 title: "Stochastic Rainfall"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{stochastic_rainfall}
+  %\VignetteIndexEntry{Stochastic Rainfall}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

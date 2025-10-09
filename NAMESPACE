@@ -3,6 +3,7 @@
 export(complete_daily_calendar)
 export(daylength_f95)
 export(default_weather_mapping)
+export(export_weather)
 export(fit_seasonal_photo)
 export(fit_seasonal_temp)
 export(impute_weather)

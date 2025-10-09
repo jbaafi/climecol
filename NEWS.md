@@ -1,3 +1,14 @@
+# climecol 0.1.9
+
+### New vignette: Exporting Processed Weather Data
+- Added `vignettes/export_weather.Rmd` demonstrating the use of `export_weather()` for reproducible weather data archiving.
+- Shows how metadata (station, scenario, package version, date) are stored directly within exported CSV headers.
+- Includes example helper `read_export_header()` to read back metadata from exported files.
+
+### Minor updates
+- Improved consistency in vignette naming and metadata style.
+- Updated documentation to cross-reference `export_weather()` in the reference index.
+
 # climecol 0.1.8
 
 ### New
