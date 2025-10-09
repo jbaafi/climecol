@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">climecol</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -415,6 +415,33 @@ This allows you to produce rainfall inputs for simulation models that retain rea
 <span><span class="co">#&gt; 4 2024-01-01 Temp+5C   3.84 </span></span>
 <span><span class="co">#&gt; 5 2024-01-02 baseline -1.29 </span></span>
 <span><span class="co">#&gt; 6 2024-01-02 Temp+0C  -1.29</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="rainfall-scenarios-baselinedryweterratic">Rainfall scenarios (baseline/dry/wet/erratic)<a class="anchor" aria-label="anchor" href="#rainfall-scenarios-baselinedryweterratic"></a>
+</h2>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_rainfall_scenarios.html">simulate_rainfall_scenarios</a></span><span class="op">(</span></span>
+<span>  <span class="va">weather_nl</span>,</span>
+<span>  times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2012-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">90</span>,</span>
+<span>  scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span>,<span class="st">"dry"</span>,<span class="st">"wet"</span>,<span class="st">"erratic"</span><span class="op">)</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">series</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 4</span></span>
+<span><span class="co">#&gt;   date       month scenario rain_mm</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;     &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 2012-01-01     1 baseline     0  </span></span>
+<span><span class="co">#&gt; 2 2012-01-02     1 baseline     0  </span></span>
+<span><span class="co">#&gt; 3 2012-01-03     1 baseline     0  </span></span>
+<span><span class="co">#&gt; 4 2012-01-04     1 baseline     0  </span></span>
+<span><span class="co">#&gt; 5 2012-01-05     1 baseline     0.4</span></span>
+<span><span class="co">#&gt; 6 2012-01-06     1 baseline     0</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span><span class="op">)</span> <span class="va">sim</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>

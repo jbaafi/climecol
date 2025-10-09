@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climecol</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,28 @@
       <small>Source: <a href="https://github.com/jbaafi/climecol/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.8" id="climecol-018">climecol 0.1.8<a class="anchor" aria-label="anchor" href="#climecol-018"></a></h2>
+<div class="section level4">
+<h4 id="new-0-1-8">New<a class="anchor" aria-label="anchor" href="#new-0-1-8"></a></h4>
+<ul><li>Added <code><a href="../reference/simulate_rainfall_scenarios.html">simulate_rainfall_scenarios()</a></code> — a flexible function to generate <strong>daily rainfall scenarios</strong> while preserving <strong>monthly seasonality</strong>.
+<ul><li>Samples rainfall values stochastically from empirical monthly distributions across all observed years.</li>
+<li>Includes built-in scenarios: <code>"baseline"</code>, <code>"dry"</code>, <code>"wet"</code>, and <code>"erratic"</code>.</li>
+<li>Supports adjustable multipliers and random variability ranges.</li>
+<li>Optional plotting (<code>plot = TRUE</code>) provides a quick visualization of rainfall dynamics under each scenario.</li>
+<li>Output is tidy and directly compatible with climate-driven <strong>modeling workflows</strong> (e.g., rainfall-driven mosquito models).</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="improvements-0-1-8">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-8"></a></h4>
+<ul><li>Expanded vignette and README examples demonstrating rainfall-scenario generation for modeling applications.</li>
+<li>Updated <code>_pkgdown.yml</code> reference index to include new rainfall-scenario utilities.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="version-0-1-8">Version<a class="anchor" aria-label="anchor" href="#version-0-1-8"></a></h4>
+<ul><li>Incremented package version to <strong>0.1.8</strong> and rebuilt documentation and pkgdown site.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.7" id="climecol-017">climecol 0.1.7<a class="anchor" aria-label="anchor" href="#climecol-017"></a></h2>
 <div class="section level3">
