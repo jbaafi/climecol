@@ -1,3 +1,18 @@
+# climecol 0.1.7
+
+## New
+- Added `simulate_temp_shifts()` — generates daily temperature scenarios (e.g., baseline to +5 °C) using the fitted seasonal curve from [`fit_seasonal_temp()`].
+  - Supports built-in or user-specified models.
+  - Optionally maps results to actual calendar dates.
+  - Returns tidy `long` or `wide` format for direct plotting or model input.
+
+### Improvements
+- Updated vignette and README examples demonstrating temperature-scenario simulation.
+- Added unit tests for scenario generation and date mapping.
+
+### Version
+- Incremented version to **0.1.7** and rebuilt pkgdown site.
+
 # climecol 0.1.6
 
 ## New features

@@ -58,6 +58,7 @@ reference:
       - fit_seasonal_temp
       - fit_seasonal_photo
       - sample_rainfall_by_month
+      - simulate_temp_shifts
 
   - title: Photoperiod
     contents:

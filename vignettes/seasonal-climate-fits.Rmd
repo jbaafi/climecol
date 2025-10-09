@@ -92,7 +92,28 @@ Suggested applications
 
 
 
+### Temperature shift scenarios
 
+We often need “warming” scenarios like +1 to +5 °C on top of the baseline seasonal cycle.  
+`simulate_temp_shifts()` uses the *best* model from `fit_seasonal_temp()` by default and
+adds fixed deltas to the fitted daily mean curve.
 
+```{r}
+data(weather_nl)
+fit <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"))
+
+# Scenarios over day-of-year
+sims <- simulate_temp_shifts(fit, deltas = 0:5)  # long format
+library(ggplot2)
+ggplot(sims, aes(day_of_year, temp_c, color = key)) +
+  geom_line(linewidth = 0.9) +
+  labs(x = "Day of year", y = "Mean temperature (°C)", color = "Scenario") +
+  theme_minimal()
+
+# Scenarios for a specific calendar year
+days <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
+sims_2024 <- simulate_temp_shifts(fit, deltas = c(0,2,5), dates = days)
+head(sims_2024)
+```
 
 

@@ -261,6 +261,31 @@ The sampled values are drawn from the same-month historical rainfall distributio
 so wet and dry months retain their distinct variability patterns.
 
 
+## Simulating Temperature Shift Scenarios (baseline + deltas)
+
+```{r}
+data(weather_nl)
+fit <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"))
+
+# Over day-of-year (1..365)
+sims <- simulate_temp_shifts(fit, deltas = 0:5)   # long format
+head(sims)
+
+# Plot
+library(ggplot2)
+ggplot(sims, aes(x = day_of_year)) +
+  geom_line(aes(y = temp_c, color = key, linetype = key), linewidth = 0.9) +
+  labs(x = "Day of year", y = "Mean temperature (°C)", color = "Scenario", linetype = "Scenario") +
+  theme_minimal()
+
+# Map scenarios to an actual year (e.g., 2024) for modeling
+days <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
+sims_2024 <- simulate_temp_shifts(fit, deltas = c(0, 2, 5), dates = days)
+
+head(sims_2024)
+```
+
+
 ## Contributing
 
 Issues and pull requests are welcome via the repo’s [issue tracker](https://github.com/jbaafi/climecol/issues).
