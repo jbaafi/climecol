@@ -1,3 +1,20 @@
+# climecol 0.1.8
+
+### New
+- Added `simulate_rainfall_scenarios()` — a flexible function to generate **daily rainfall scenarios** while preserving **monthly seasonality**.
+  - Samples rainfall values stochastically from empirical monthly distributions across all observed years.
+  - Includes built-in scenarios: `"baseline"`, `"dry"`, `"wet"`, and `"erratic"`.
+  - Supports adjustable multipliers and random variability ranges.
+  - Optional plotting (`plot = TRUE`) provides a quick visualization of rainfall dynamics under each scenario.
+  - Output is tidy and directly compatible with climate-driven **modeling workflows** (e.g., rainfall-driven mosquito models).
+
+### Improvements
+- Expanded vignette and README examples demonstrating rainfall-scenario generation for modeling applications.
+- Updated `_pkgdown.yml` reference index to include new rainfall-scenario utilities.
+
+### Version
+- Incremented package version to **0.1.8** and rebuilt documentation and pkgdown site.
+
 # climecol 0.1.7
 
 ## New

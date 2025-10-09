@@ -405,6 +405,34 @@ head(sims_2024)
 #> 6 2024-01-02 Temp+0C  -1.29
 ```
 
+## Rainfall scenarios (baseline/dry/wet/erratic)
+
+``` r
+data(weather_nl)
+set.seed(123)
+
+sim <- simulate_rainfall_scenarios(
+  weather_nl,
+  times = as.Date("2012-01-01") + 0:90,
+  scenarios = c("baseline","dry","wet","erratic"),
+  plot = TRUE
+)
+
+head(sim$series)
+#> # A tibble: 6 × 4
+#>   date       month scenario rain_mm
+#>   <date>     <int> <chr>      <dbl>
+#> 1 2012-01-01     1 baseline     0  
+#> 2 2012-01-02     1 baseline     0  
+#> 3 2012-01-03     1 baseline     0  
+#> 4 2012-01-04     1 baseline     0  
+#> 5 2012-01-05     1 baseline     0.4
+#> 6 2012-01-06     1 baseline     0
+if (!is.null(sim$plot)) sim$plot
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+
 ## Contributing
 
 Issues and pull requests are welcome via the repo’s [issue

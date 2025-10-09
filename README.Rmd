@@ -285,6 +285,23 @@ sims_2024 <- simulate_temp_shifts(fit, deltas = c(0, 2, 5), dates = days)
 head(sims_2024)
 ```
 
+## Rainfall scenarios (baseline/dry/wet/erratic)
+
+```{r}
+data(weather_nl)
+set.seed(123)
+
+sim <- simulate_rainfall_scenarios(
+  weather_nl,
+  times = as.Date("2012-01-01") + 0:90,
+  scenarios = c("baseline","dry","wet","erratic"),
+  plot = TRUE
+)
+
+head(sim$series)
+if (!is.null(sim$plot)) sim$plot
+```
+
 
 ## Contributing
 

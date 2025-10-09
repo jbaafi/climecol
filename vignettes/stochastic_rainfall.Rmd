@@ -80,9 +80,25 @@ This workflow provides a lightweight, nonparametric way to propagate
 hydroclimatic variability into climate or population dynamics models.
 
 
+## Rainfall scenarios for modeling
 
+We can generate stochastic daily rainfall preserving monthly seasonality by sampling
+within-month empirical distributions across years, then applying simple scenario multipliers.
 
+```{r}
+set.seed(2025)
+sim <- simulate_rainfall_scenarios(
+  weather_nl,
+  times = seq(as.Date("2011-05-01"), as.Date("2011-08-31"), by = "day"),
+  scenarios = c("baseline","dry","wet","erratic"),
+  plot = TRUE
+)
+knitr::kable(head(sim$series), caption = "First rows of simulated rainfall series")
+if (!is.null(sim$plot)) sim$plot
+```
 
+Note: Zeros are preserved naturally by sampling from the empirical pool.
+For fully custom scenarios, you can post-process sim$series (e.g., cap extremes, apply drought blocks, etc.).
 
 
 
