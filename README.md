@@ -1,13 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# climecol
+# climecol <a href="https://jbaafi.github.io/climecol/"> <img src="man/figures/logo.png" align="right" width="140" alt="climecol hex logo">
 
-<!-- <a href="https://jbaafi.github.io/climecol/"> -->
-
-<!-- <img src="man/figures/logo.png" align="right" width="140" alt="climecol hex logo"> -->
-
-<!-- </a> -->
+</a>
 
 <!-- badges: start -->
 
