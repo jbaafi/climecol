@@ -20,7 +20,11 @@ if (Sys.getenv("CI") == "" && requireNamespace("devtools", quietly = TRUE)) {
 library(climecol)
 ```
 
-# `climecol`
+# climecol 
+<!-- <a href="https://jbaafi.github.io/climecol/"> -->
+<!-- <img src="man/figures/logo.png" align="right" width="140" alt="climecol hex logo"> -->
+<!-- </a> -->
+
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbaafi/climecol/actions/workflows/R-CMD-check.yaml)

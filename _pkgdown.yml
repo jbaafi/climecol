@@ -3,6 +3,12 @@ url: https://jbaafi.github.io/climecol/
 template:
   bootstrap: 5
 
+# Home header logo next to the title
+logo:
+  path: man/figures/logo.png
+  alt: "climecol logo"
+  href: index.html
+
 home:
   title: climecol
   description: Tools for climate/weather data in ecological modelling
@@ -11,6 +17,8 @@ navbar:
   structure:
     left:  [getting-started, reference, articles, news]
     right: [search, github]
+  #logo: man/figures/logo.png
+
   components:
     getting-started:
       text: Getting started
