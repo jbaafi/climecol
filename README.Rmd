@@ -33,13 +33,24 @@ library(climecol)
 
 ## Overview
 
-`climecol` provides tools for archiving, cleaning, analyzing, and visualizing weather and climate data for ecological and infectious-disease modeling.
-It ships curated daily weather data and simple helpers for quick plotting and analysis.
+`climecol` provides a lightweight framework for reproducible climate–ecology data workflows.
+It helps researchers import, validate, summarize, and simulate weather and climate data for ecological or infectious-disease modeling.
+
+Core features:
+
+- Standardized import and validation of daily weather data
+-	Gap detection and imputation tools
+-	Fast photoperiod (daylength) calculations
+-	Simple seasonal curve fitting for temperature or photoperiod
+-	Stochastic rainfall sampling and scenario simulation
+
+Full documentation and tutorials:
+👉 https://jbaafi.github.io/climecol
 
 
 ## Installation
 
-You can install the development version of `climecol` from [GitHub](https://github.com/) with:
+Install the development version from GitHub:
 
 ``` r
 # install.packages("devtools")
@@ -48,270 +59,57 @@ devtools::install_github("jbaafi/climecol")
 
 (Alternatively: `pak::pak("jbaafi/climecol")`.)
 
-## Data Importation
 
-```{r, eval=FALSE}
-library(climecol)
-wx <- read_weather_csv("/Users/jbaafi/Desktop/data.csv")
-qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
-qa$summary
-
-```
-
-## Gap handling and imputation
-
-The package provides tools to handle gaps in weather records:
-
-- **`complete_daily_calendar()`** ensures a full daily date sequence per station, making gaps explicit.  
-- **`summarise_gaps()`** quantifies missingness, coverage, and longest contiguous gaps.  
-- **`impute_weather()`** offers lightweight fillers (last observation carried forward, linear, or spline).  
-
-Together, these helpers make it easy to prepare consistent daily time series for downstream climate-driven modeling.
-
-
-## Photoperiod (daylength)
-
-The package includes fast, dependency-free photoperiod helpers based on a standard solar-geometry approximation (Forsythe et al., 1995). These return **hours of daylight** from date and latitude only—ideal as a smooth seasonal driver for ecological models.
-
-### Functions
-
-- `daylength_f95(date, lat)` → numeric vector of daylight hours
-
-- `photoperiod_year(year, lat = NULL, location = NULL, aggregate = c("none","month"))`  
-  - Supply either `lat` **or** a built-in `location` key  
-  - `aggregate = "month"` returns monthly means (12 rows)
-
-- `photoperiod_sites()` → named vector of built-in locations and latitudes  
-  *(keys are matched case-insensitively; punctuation/spacing ignored)*
-
-Quick examples
+### Quick examples
 
 ```{r}
 library(climecol)
 
-# Daily photoperiod for 2024 at St. John's (NL) via location
-pp_nl <- photoperiod_year(2024, location = "St John's")
-head(pp_nl)
-
-# Monthly mean photoperiod at 47.56°N
-photoperiod_year(2024, lat = 47.56, aggregate = "month")
-
-# Saint John (NB) vs St. John's (NL) — distinct cities
-photoperiod_year(2024, location = "Saint John", aggregate = "month")
-photoperiod_year(2024, location = "St John's", aggregate = "month")
-
-# List built-in sites
-photoperiod_sites()
-
-```
-
-A simple plot of daylength over the year:
-
-```{r}
-plot(pp_nl$date, pp_nl$daylength_hours, type = "l",
-     xlab = "Date", ylab = "Daylength (hours)",
-     main = "Photoperiod at St. John's, NL (2024)")
-
-```
-
-### Notes
-
-- Inputs like `"St John's"`, `"st_johns"`, and `"St.Johns"` all resolve to the same NL site (`st_johns`).
-- `"Saint John"` / `"st john"` resolves to NB (`saint_john`).
-- If you pass `lat` (no `location`), the output is labeled as `lat_<value>`.
-
-
-## Example
-
-Load the package and explore the included Newfoundland dataset (2008–2023):
-
-```{r example}
-library(climecol)
-
-# Load dataset
+# Load sample weather data (Newfoundland, 2008–2023)
 data(weather_nl)
 
-# Peek at structure
-dplyr::glimpse(weather_nl)
-
+# Validate
+qa <- validate_weather(weather_nl)
+qa$summary
 ```
 
-
-## Photoperiod fits (seasonal curve)
 
 ```{r}
-# Option A: generate photoperiod from a location for two years and fit
-res <- fit_seasonal_photo(location = "St John's",
-                          years = c(2023, 2024),
-                          funcs = c("sin1","sin2"),
-                          plot = TRUE)
-res$metrics
-if (!is.null(res$plot)) print(res$plot)
-
-# Option B: provide your own photoperiod data frame
-# df <- data.frame(date = as.Date("2023-01-01") + 0:729,
-#                  photoperiod_hours = 12 + 6*cos(2*pi*(1:730)/365))
-# fit_seasonal_photo(df = df, funcs = "sin1", plot = TRUE)
-
-# Custom model example
-res2 <- fit_seasonal_photo(
-  location = "St John's",
-  years = c(2023, 2024),
-  funcs = "sin1",
-  custom = list(
-    cos1 = list(
-      formula = avg_photo ~ a + b * cos(2*pi*day_of_year/365),
-      start   = list(a = 12, b = 6)
-    )
-  )
-)
-res2$metrics
-
-```
-
-## Rainfall data
-
-Plot daily rainfall:
-
-```{r rainfall-plot, message=FALSE, warning=FALSE}
+# Plot daily rainfall
 plot_rainfall(weather_nl)
 ```
 
-> This figure was generated when knitting this README.  
 
-### Seasonal temperature fitting
-
-```{r}
-data(weather_nl)
-res <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"), plot = TRUE)
-res$metrics
-#> # A tibble: 2 x 3
-#>   model   AIC    R2
-#>   <chr> <dbl> <dbl>
-#> 1 sin1   ...   ...
-#> 2 sin2   ...   ...
-
-# plot overlay (observed vs fitted)
-res$plot
-```
-
-## Custom seasonal temperature models
-
-In addition to the built-in sinusoidal models (`sin1`, `cos1`, etc.), you can
-also pass your own formula to `fit_seasonal_temp()` via the `funcs` argument.
-
-For example, suppose we define our custom function:
-
-```{r}
-#Standardize column names
-
-df <- normalize_weather_names(weather_nl)
-
-# Define your custom model (formula uses mean_temp ~ ... and day_of_year)
-custom_models <- list(
-  quad = list(
-    formula = mean_temp ~ a + b * day_of_year + c * I(day_of_year^2),
-    start   = list(a = mean(df$tavg_c, na.rm = TRUE), b = 0, c = 0)  # <- REQUIRED
-  )
-)
-
-# Fit: built-ins via `funcs=`, user models via `custom=`
-res <- fit_seasonal_temp(
-  df,
-  funcs  = "sin1",     # optional: keep a built-in for comparison
-  custom = custom_models,
-  plot   = TRUE
-)
-
-# 5) Results
-res$metrics   # AIC and R2 per model
-res$plot      # overlay plot
-
-```
-
-
-## Stochastic Rainfall Sampling by Month
-
-The function `sample_rainfall_by_month()` generates a stochastic **daily rainfall time series**
-while preserving the **monthly seasonality** observed in the historical record.  
-This allows you to produce rainfall inputs for simulation models that retain realistic
-wet/dry season structure without imposing a statistical distribution.
-
-
-```{r rainfall-sampler, message=FALSE}
-library(climecol)
-data(weather_nl)
-
-# Define target dates to simulate
-set.seed(123)
-dates <- seq.Date(as.Date("2012-01-01"), as.Date("2012-01-15"), by = "day")
-
-# Sample synthetic daily rainfall using historical monthly pools
-rain_sim <- sample_rainfall_by_month(dates, weather_nl)
-
-# Preview
-head(data.frame(date = dates, rain_sim_mm = rain_sim), 10)
-```
-
-```{r}
-plot(dates, rain_sim, type = "h", lwd = 3,
-     xlab = "Date", ylab = "Simulated rainfall (mm)",
-     main = "Daily rainfall sampled by month")
-```
-
-The sampled values are drawn from the same-month historical rainfall distribution,
-so wet and dry months retain their distinct variability patterns.
-
-
-## Simulating Temperature Shift Scenarios (baseline + deltas)
-
-```{r}
-data(weather_nl)
+```{r example}
+# Fit a simple seasonal temperature curve
 fit <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"))
-
-# Over day-of-year (1..365)
-sims <- simulate_temp_shifts(fit, deltas = 0:5)   # long format
-head(sims)
-
-# Plot
-library(ggplot2)
-ggplot(sims, aes(x = day_of_year)) +
-  geom_line(aes(y = temp_c, color = key, linetype = key), linewidth = 0.9) +
-  labs(x = "Day of year", y = "Mean temperature (°C)", color = "Scenario", linetype = "Scenario") +
-  theme_minimal()
-
-# Map scenarios to an actual year (e.g., 2024) for modeling
-days <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
-sims_2024 <- simulate_temp_shifts(fit, deltas = c(0, 2, 5), dates = days)
-
-head(sims_2024)
-```
-
-## Rainfall scenarios (baseline/dry/wet/erratic)
-
-```{r}
-data(weather_nl)
-set.seed(123)
-
-sim <- simulate_rainfall_scenarios(
-  weather_nl,
-  times = as.Date("2012-01-01") + 0:90,
-  scenarios = c("baseline","dry","wet","erratic"),
-  plot = TRUE
-)
-
-head(sim$series)
-if (!is.null(sim$plot)) sim$plot
+fit$metrics
 ```
 
 
-## Contributing
+Learn More:
 
-Issues and pull requests are welcome via the repo’s [issue tracker](https://github.com/jbaafi/climecol/issues).
+See the pkgdown site for detailed guides:
+
+- [Getting started](https://jbaafi.github.io/climecol/articles/getting-started.html)
+- [Importing and QA of weather data](https://jbaafi.github.io/climecol/articles/import-and-qa-weather.html)
+- [Seasonal climate fits](https://jbaafi.github.io/climecol/articles/seasonal-climate-fits.html)
+- [Stochastic rainfall sampling](https://jbaafi.github.io/climecol/articles/stochastic_rainfall.html)
+- [Exporting processed data](https://jbaafi.github.io/climecol/articles/export_weather.html)
+
+## Citation
+
+If you use `climecol` in your research, please cite it as:
+
+Baafi, J. (2025). climecol: Tools for Archiving and Analyzing Climate Data for Ecological Modeling.
+R package version 0.1.9. Available at: https://github.com/jbaafi/climecol
+
 
 ## Contact
+For questions or collaboration:
 
-If you’re interested in discussing collaborations or have questions about `climecol`, email me at [jbaafi@mun.ca](mailto:jbaafi@mun.ca).
+Joseph Baafi — [jbaafi@mun.ca](mailto:jbaafi@mun.ca)
+
 
 ## License
 
