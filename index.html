@@ -66,401 +66,80 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><code>climecol</code> provides tools for archiving, cleaning, analyzing, and visualizing weather and climate data for ecological and infectious-disease modeling. It ships curated daily weather data and simple helpers for quick plotting and analysis.</p>
+<p><code>climecol</code> provides a lightweight framework for reproducible climate–ecology data workflows. It helps researchers import, validate, summarize, and simulate weather and climate data for ecological or infectious-disease modeling.</p>
+<p>Core features:</p>
+<ul>
+<li>Standardized import and validation of daily weather data</li>
+<li>Gap detection and imputation tools</li>
+<li>Fast photoperiod (daylength) calculations</li>
+<li>Simple seasonal curve fitting for temperature or photoperiod</li>
+<li>Stochastic rainfall sampling and scenario simulation</li>
+</ul>
+<p>Full documentation and tutorials: 👉 <a href="https://jbaafi.github.io/climecol" class="uri">https://jbaafi.github.io/climecol</a></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>climecol</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>Install the development version from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jbaafi/climecol"</span><span class="op">)</span></span></code></pre></div>
 <p>(Alternatively: <code>pak::pak("jbaafi/climecol")</code>.)</p>
-</div>
-<div class="section level2">
-<h2 id="data-importation">Data Importation<a class="anchor" aria-label="anchor" href="#data-importation"></a>
-</h2>
+<div class="section level3">
+<h3 id="quick-examples">Quick examples<a class="anchor" aria-label="anchor" href="#quick-examples"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
-<span><span class="va">wx</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_weather_csv.html">read_weather_csv</a></span><span class="op">(</span><span class="st">"/Users/jbaafi/Desktop/data.csv"</span><span class="op">)</span></span>
-<span><span class="va">qa</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/validate_weather.html">validate_weather</a></span><span class="op">(</span><span class="va">wx</span>, temp_bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">50</span>, <span class="fl">50</span><span class="op">)</span>, rain_max <span class="op">=</span> <span class="fl">150</span>, snow_max <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
-<span><span class="va">qa</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="gap-handling-and-imputation">Gap handling and imputation<a class="anchor" aria-label="anchor" href="#gap-handling-and-imputation"></a>
-</h2>
-<p>The package provides tools to handle gaps in weather records:</p>
-<ul>
-<li>
-<strong><code><a href="reference/complete_daily_calendar.html">complete_daily_calendar()</a></code></strong> ensures a full daily date sequence per station, making gaps explicit.<br>
-</li>
-<li>
-<strong><code><a href="reference/summarise_gaps.html">summarise_gaps()</a></code></strong> quantifies missingness, coverage, and longest contiguous gaps.<br>
-</li>
-<li>
-<strong><code><a href="reference/impute_weather.html">impute_weather()</a></code></strong> offers lightweight fillers (last observation carried forward, linear, or spline).</li>
-</ul>
-<p>Together, these helpers make it easy to prepare consistent daily time series for downstream climate-driven modeling.</p>
-</div>
-<div class="section level2">
-<h2 id="photoperiod-daylength">Photoperiod (daylength)<a class="anchor" aria-label="anchor" href="#photoperiod-daylength"></a>
-</h2>
-<p>The package includes fast, dependency-free photoperiod helpers based on a standard solar-geometry approximation (Forsythe et al., 1995). These return <strong>hours of daylight</strong> from date and latitude only—ideal as a smooth seasonal driver for ecological models.</p>
-<div class="section level3">
-<h3 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a>
-</h3>
-<ul>
-<li><p><code>daylength_f95(date, lat)</code> → numeric vector of daylight hours</p></li>
-<li>
-<p><code>photoperiod_year(year, lat = NULL, location = NULL, aggregate = c("none","month"))</code></p>
-<ul>
-<li>Supply either <code>lat</code> <strong>or</strong> a built-in <code>location</code> key<br>
-</li>
-<li>
-<code>aggregate = "month"</code> returns monthly means (12 rows)</li>
-</ul>
-</li>
-<li><p><code><a href="reference/photoperiod_sites.html">photoperiod_sites()</a></code> → named vector of built-in locations and latitudes<br><em>(keys are matched case-insensitively; punctuation/spacing ignored)</em></p></li>
-</ul>
-<p>Quick examples</p>
+<span></span>
+<span><span class="co"># Load sample weather data (Newfoundland, 2008–2023)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Validate</span></span>
+<span><span class="va">qa</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/validate_weather.html">validate_weather</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span><span class="va">qa</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 11</span></span>
+<span><span class="co">#&gt;   n_rows stations span_start span_end   n_missing_dates n_negative_values</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;    &lt;int&gt; &lt;date&gt;     &lt;date&gt;               &lt;int&gt;             &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1   5844        2 2008-01-01 2023-12-31               0                 0</span></span>
+<span><span class="co">#&gt; # ℹ 5 more variables: n_tmax_lt_tmin &lt;int&gt;, n_temp_oob &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   n_rain_gt_max &lt;int&gt;, n_snow_gt_max &lt;int&gt;, n_precip_inconsistent &lt;int&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Daily photoperiod for 2024 at St. John's (NL) via location</span></span>
-<span><span class="va">pp_nl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, location <span class="op">=</span> <span class="st">"St John's"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pp_nl</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         date daylength_hours   lat location</span></span>
-<span><span class="co">#&gt; 1 2024-01-01        8.517220 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 2 2024-01-02        8.532937 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 3 2024-01-03        8.549903 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 4 2024-01-04        8.568104 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 5 2024-01-05        8.587527 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 6 2024-01-06        8.608155 47.56 st_johns</span></span>
-<span></span>
-<span><span class="co"># Monthly mean photoperiod at 47.56°N</span></span>
-<span><span class="fu"><a href="reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, lat <span class="op">=</span> <span class="fl">47.56</span>, aggregate <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          date daylength_hours   lat  location</span></span>
-<span><span class="co">#&gt; 1  2024-01-01        8.916550 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 2  2024-02-01       10.207203 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 3  2024-03-01       11.887952 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 4  2024-04-01       13.652182 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 5  2024-05-01       15.161088 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 6  2024-06-01       15.912512 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 7  2024-07-01       15.487501 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 8  2024-08-01       14.115072 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 9  2024-09-01       12.384641 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 10 2024-10-01       10.635663 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 11 2024-11-01        9.175674 47.56 lat_47.56</span></span>
-<span><span class="co">#&gt; 12 2024-12-01        8.490440 47.56 lat_47.56</span></span>
-<span></span>
-<span><span class="co"># Saint John (NB) vs St. John's (NL) — distinct cities</span></span>
-<span><span class="fu"><a href="reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, location <span class="op">=</span> <span class="st">"Saint John"</span>, aggregate <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          date daylength_hours   lat   location</span></span>
-<span><span class="co">#&gt; 1  2024-01-01        9.172983 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 2  2024-02-01       10.354056 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 3  2024-03-01       11.902529 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 4  2024-04-01       13.528932 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 5  2024-05-01       14.910968 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 6  2024-06-01       15.593079 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 7  2024-07-01       15.207900 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 8  2024-08-01       13.954218 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 9  2024-09-01       12.360833 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 10 2024-10-01       10.748119 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 11 2024-11-01        9.409230 45.27 saint_john</span></span>
-<span><span class="co">#&gt; 12 2024-12-01        8.785616 45.27 saint_john</span></span>
-<span><span class="fu"><a href="reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, location <span class="op">=</span> <span class="st">"St John's"</span>, aggregate <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          date daylength_hours   lat location</span></span>
-<span><span class="co">#&gt; 1  2024-01-01        8.916550 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 2  2024-02-01       10.207203 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 3  2024-03-01       11.887952 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 4  2024-04-01       13.652182 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 5  2024-05-01       15.161088 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 6  2024-06-01       15.912512 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 7  2024-07-01       15.487501 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 8  2024-08-01       14.115072 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 9  2024-09-01       12.384641 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 10 2024-10-01       10.635663 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 11 2024-11-01        9.175674 47.56 st_johns</span></span>
-<span><span class="co">#&gt; 12 2024-12-01        8.490440 47.56 st_johns</span></span>
-<span></span>
-<span><span class="co"># List built-in sites</span></span>
-<span><span class="fu"><a href="reference/photoperiod_sites.html">photoperiod_sites</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   st_johns saint_john     kumasi    nairobi  cape_town ain_mahbel </span></span>
-<span><span class="co">#&gt;      47.56      45.27       6.69      -1.29     -33.92      34.24</span></span></code></pre></div>
-<p>A simple plot of daylength over the year:</p>
+<code class="sourceCode R"><span><span class="co"># Plot daily rainfall</span></span>
+<span><span class="fu"><a href="reference/plot_rainfall.html">plot_rainfall</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 371 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_col()`).</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pp_nl</span><span class="op">$</span><span class="va">date</span>, <span class="va">pp_nl</span><span class="op">$</span><span class="va">daylength_hours</span>, type <span class="op">=</span> <span class="st">"l"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Date"</span>, ylab <span class="op">=</span> <span class="st">"Daylength (hours)"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Photoperiod at St. John's, NL (2024)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
-</div>
-<div class="section level3">
-<h3 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
-</h3>
+<code class="sourceCode R"><span><span class="co"># Fit a simple seasonal temperature curve</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span><span class="va">weather_nl</span>, funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">metrics</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span><span class="co">#&gt;   model   AIC    R2</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 sin1  1204. 0.971</span></span>
+<span><span class="co">#&gt; 2 sin2  1159. 0.975</span></span></code></pre></div>
+<p>Learn More:</p>
+<p>See the pkgdown site for detailed guides:</p>
 <ul>
-<li>Inputs like <code>"St John's"</code>, <code>"st_johns"</code>, and <code>"St.Johns"</code> all resolve to the same NL site (<code>st_johns</code>).</li>
-<li>
-<code>"Saint John"</code> / <code>"st john"</code> resolves to NB (<code>saint_john</code>).</li>
-<li>If you pass <code>lat</code> (no <code>location</code>), the output is labeled as <code>lat_&lt;value&gt;</code>.</li>
+<li><a href="https://jbaafi.github.io/climecol/articles/getting-started.html">Getting started</a></li>
+<li><a href="https://jbaafi.github.io/climecol/articles/import-and-qa-weather.html">Importing and QA of weather data</a></li>
+<li><a href="https://jbaafi.github.io/climecol/articles/seasonal-climate-fits.html">Seasonal climate fits</a></li>
+<li><a href="https://jbaafi.github.io/climecol/articles/stochastic_rainfall.html">Stochastic rainfall sampling</a></li>
+<li><a href="https://jbaafi.github.io/climecol/articles/export_weather.html">Exporting processed data</a></li>
 </ul>
 </div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>Load the package and explore the included Newfoundland dataset (2008–2023):</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Load dataset</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Peek at structure</span></span>
-<span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rows: 5,844</span></span>
-<span><span class="co">#&gt; Columns: 13</span></span>
-<span><span class="co">#&gt; $ date         &lt;date&gt; 2008-01-01, 2008-01-02, 2008-01-03, 2008-01-04, 2008-01-…</span></span>
-<span><span class="co">#&gt; $ Year         &lt;int&gt; 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 200…</span></span>
-<span><span class="co">#&gt; $ Month        &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ Day          &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…</span></span>
-<span><span class="co">#&gt; $ tmin_c       &lt;dbl&gt; -6.6, -8.1, -11.0, -12.6, -9.6, -10.5, -4.2, -1.2, -2.5, …</span></span>
-<span><span class="co">#&gt; $ tmax_c       &lt;dbl&gt; 1.6, 2.0, -0.4, -5.9, -2.4, -2.5, 2.5, 3.8, 0.5, 9.5, 0.5…</span></span>
-<span><span class="co">#&gt; $ tavg_c       &lt;dbl&gt; -2.5, -3.1, -5.7, -9.3, -6.0, -6.5, -0.9, 1.3, -1.0, 4.8,…</span></span>
-<span><span class="co">#&gt; $ rain_mm      &lt;dbl&gt; 0.2, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.6, 0.8, 8.2, 0.0, 11…</span></span>
-<span><span class="co">#&gt; $ precip_mm    &lt;dbl&gt; 2.0, 4.5, 0.2, 0.0, 1.6, 2.2, 0.0, 0.6, 1.8, 8.2, 0.0, 11…</span></span>
-<span><span class="co">#&gt; $ snow_cm      &lt;dbl&gt; 1.8, 5.0, 0.0, 0.0, 2.6, 6.4, 0.0, 0.0, 1.8, 0.0, 0.0, 0.…</span></span>
-<span><span class="co">#&gt; $ Station.Name &lt;chr&gt; "ST JOHN'S A", "ST JOHN'S A", "ST JOHN'S A", "ST JOHN'S A…</span></span>
-<span><span class="co">#&gt; $ Climate.ID   &lt;dbl&gt; 8403506, 8403506, 8403506, 8403506, 8403506, 8403506, 840…</span></span>
-<span><span class="co">#&gt; $ station      &lt;chr&gt; "ST JOHN'S A", "ST JOHN'S A", "ST JOHN'S A", "ST JOHN'S A…</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="photoperiod-fits-seasonal-curve">Photoperiod fits (seasonal curve)<a class="anchor" aria-label="anchor" href="#photoperiod-fits-seasonal-curve"></a>
-</h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Option A: generate photoperiod from a location for two years and fit</span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_photo.html">fit_seasonal_photo</a></span><span class="op">(</span>location <span class="op">=</span> <span class="st">"St John's"</span>,</span>
-<span>                          years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">2024</span><span class="op">)</span>,</span>
-<span>                          funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span>,</span>
-<span>                          plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">res</span><span class="op">$</span><span class="va">metrics</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
-<span><span class="co">#&gt;   model   AIC    R2</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 sin1  -934. 0.999</span></span>
-<span><span class="co">#&gt; 2 sin2  -943. 0.999</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Option B: provide your own photoperiod data frame</span></span>
-<span><span class="co"># df &lt;- data.frame(date = as.Date("2023-01-01") + 0:729,</span></span>
-<span><span class="co">#                  photoperiod_hours = 12 + 6*cos(2*pi*(1:730)/365))</span></span>
-<span><span class="co"># fit_seasonal_photo(df = df, funcs = "sin1", plot = TRUE)</span></span>
-<span></span>
-<span><span class="co"># Custom model example</span></span>
-<span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_photo.html">fit_seasonal_photo</a></span><span class="op">(</span></span>
-<span>  location <span class="op">=</span> <span class="st">"St John's"</span>,</span>
-<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2023</span>, <span class="fl">2024</span><span class="op">)</span>,</span>
-<span>  funcs <span class="op">=</span> <span class="st">"sin1"</span>,</span>
-<span>  custom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    cos1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      formula <span class="op">=</span> <span class="va">avg_photo</span> <span class="op">~</span> <span class="va">a</span> <span class="op">+</span> <span class="va">b</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="va">day_of_year</span><span class="op">/</span><span class="fl">365</span><span class="op">)</span>,</span>
-<span>      start   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">12</span>, b <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">res2</span><span class="op">$</span><span class="va">metrics</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
-<span><span class="co">#&gt;   model   AIC    R2</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 sin1  -934. 0.999</span></span>
-<span><span class="co">#&gt; 2 cos1   495. 0.967</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="rainfall-data">Rainfall data<a class="anchor" aria-label="anchor" href="#rainfall-data"></a>
-</h2>
-<p>Plot daily rainfall:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_rainfall.html">plot_rainfall</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-rainfall-plot-1.png" width="100%"></p>
-<blockquote>
-<p>This figure was generated when knitting this README.</p>
-</blockquote>
-<div class="section level3">
-<h3 id="seasonal-temperature-fitting">Seasonal temperature fitting<a class="anchor" aria-label="anchor" href="#seasonal-temperature-fitting"></a>
-</h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span><span class="va">weather_nl</span>, funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">res</span><span class="op">$</span><span class="va">metrics</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
-<span><span class="co">#&gt;   model   AIC    R2</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 sin1  1204. 0.971</span></span>
-<span><span class="co">#&gt; 2 sin2  1159. 0.975</span></span>
-<span><span class="co">#&gt; # A tibble: 2 x 3</span></span>
-<span><span class="co">#&gt;   model   AIC    R2</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 sin1   ...   ...</span></span>
-<span><span class="co">#&gt; 2 sin2   ...   ...</span></span>
-<span></span>
-<span><span class="co"># plot overlay (observed vs fitted)</span></span>
-<span><span class="va">res</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="custom-seasonal-temperature-models">Custom seasonal temperature models<a class="anchor" aria-label="anchor" href="#custom-seasonal-temperature-models"></a>
-</h2>
-<p>In addition to the built-in sinusoidal models (<code>sin1</code>, <code>cos1</code>, etc.), you can also pass your own formula to <code><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp()</a></code> via the <code>funcs</code> argument.</p>
-<p>For example, suppose we define our custom function:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Standardize column names</span></span>
-<span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Define your custom model (formula uses mean_temp ~ ... and day_of_year)</span></span>
-<span><span class="va">custom_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  quad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    formula <span class="op">=</span> <span class="va">mean_temp</span> <span class="op">~</span> <span class="va">a</span> <span class="op">+</span> <span class="va">b</span> <span class="op">*</span> <span class="va">day_of_year</span> <span class="op">+</span> <span class="va">c</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">day_of_year</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>    start   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">tavg_c</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, b <span class="op">=</span> <span class="fl">0</span>, c <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>  <span class="co"># &lt;- REQUIRED</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit: built-ins via `funcs=`, user models via `custom=`</span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span></span>
-<span>  <span class="va">df</span>,</span>
-<span>  funcs  <span class="op">=</span> <span class="st">"sin1"</span>,     <span class="co"># optional: keep a built-in for comparison</span></span>
-<span>  custom <span class="op">=</span> <span class="va">custom_models</span>,</span>
-<span>  plot   <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 5) Results</span></span>
-<span><span class="va">res</span><span class="op">$</span><span class="va">metrics</span>   <span class="co"># AIC and R2 per model</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
-<span><span class="co">#&gt;   model   AIC    R2</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 sin1  1204. 0.971</span></span>
-<span><span class="co">#&gt; 2 quad  1984. 0.758</span></span>
-<span><span class="va">res</span><span class="op">$</span><span class="va">plot</span>      <span class="co"># overlay plot</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"></p>
-</div>
-<div class="section level2">
-<h2 id="stochastic-rainfall-sampling-by-month">Stochastic Rainfall Sampling by Month<a class="anchor" aria-label="anchor" href="#stochastic-rainfall-sampling-by-month"></a>
-</h2>
-<p>The function <code><a href="reference/sample_rainfall_by_month.html">sample_rainfall_by_month()</a></code> generates a stochastic <strong>daily rainfall time series</strong> while preserving the <strong>monthly seasonality</strong> observed in the historical record.<br>
-This allows you to produce rainfall inputs for simulation models that retain realistic wet/dry season structure without imposing a statistical distribution.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Define target dates to simulate</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.Date.html" class="external-link">seq.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2012-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2012-01-15"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Sample synthetic daily rainfall using historical monthly pools</span></span>
-<span><span class="va">rain_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sample_rainfall_by_month.html">sample_rainfall_by_month</a></span><span class="op">(</span><span class="va">dates</span>, <span class="va">weather_nl</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Preview</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">dates</span>, rain_sim_mm <span class="op">=</span> <span class="va">rain_sim</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          date rain_sim_mm</span></span>
-<span><span class="co">#&gt; 1  2012-01-01         0.0</span></span>
-<span><span class="co">#&gt; 2  2012-01-02         0.0</span></span>
-<span><span class="co">#&gt; 3  2012-01-03         0.0</span></span>
-<span><span class="co">#&gt; 4  2012-01-04         0.0</span></span>
-<span><span class="co">#&gt; 5  2012-01-05         0.4</span></span>
-<span><span class="co">#&gt; 6  2012-01-06         0.0</span></span>
-<span><span class="co">#&gt; 7  2012-01-07         0.0</span></span>
-<span><span class="co">#&gt; 8  2012-01-08         0.0</span></span>
-<span><span class="co">#&gt; 9  2012-01-09         0.0</span></span>
-<span><span class="co">#&gt; 10 2012-01-10         0.0</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dates</span>, <span class="va">rain_sim</span>, type <span class="op">=</span> <span class="st">"h"</span>, lwd <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Date"</span>, ylab <span class="op">=</span> <span class="st">"Simulated rainfall (mm)"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Daily rainfall sampled by month"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-8-1.png" width="100%"></p>
-<p>The sampled values are drawn from the same-month historical rainfall distribution, so wet and dry months retain their distinct variability patterns.</p>
-</div>
-<div class="section level2">
-<h2 id="simulating-temperature-shift-scenarios-baseline--deltas">Simulating Temperature Shift Scenarios (baseline + deltas)<a class="anchor" aria-label="anchor" href="#simulating-temperature-shift-scenarios-baseline--deltas"></a>
-</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span><span class="va">weather_nl</span>, funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Over day-of-year (1..365)</span></span>
-<span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_temp_shifts.html">simulate_temp_shifts</a></span><span class="op">(</span><span class="va">fit</span>, deltas <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>   <span class="co"># long format</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sims</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 3</span></span>
-<span><span class="co">#&gt;   day_of_year key      temp_c</span></span>
-<span><span class="co">#&gt;         &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1           1 baseline -1.16 </span></span>
-<span><span class="co">#&gt; 2           1 Temp+0C  -1.16 </span></span>
-<span><span class="co">#&gt; 3           1 Temp+1C  -0.159</span></span>
-<span><span class="co">#&gt; 4           1 Temp+2C   0.841</span></span>
-<span><span class="co">#&gt; 5           1 Temp+3C   1.84 </span></span>
-<span><span class="co">#&gt; 6           1 Temp+4C   2.84</span></span>
-<span></span>
-<span><span class="co"># Plot</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sims</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">day_of_year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">temp_c</span>, color <span class="op">=</span> <span class="va">key</span>, linetype <span class="op">=</span> <span class="va">key</span><span class="op">)</span>, linewidth <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Mean temperature (°C)"</span>, color <span class="op">=</span> <span class="st">"Scenario"</span>, linetype <span class="op">=</span> <span class="st">"Scenario"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Map scenarios to an actual year (e.g., 2024) for modeling</span></span>
-<span><span class="va">days</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-12-31"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span>
-<span><span class="va">sims_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_temp_shifts.html">simulate_temp_shifts</a></span><span class="op">(</span><span class="va">fit</span>, deltas <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>, dates <span class="op">=</span> <span class="va">days</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sims_2024</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 3</span></span>
-<span><span class="co">#&gt;   date       key      temp_c</span></span>
-<span><span class="co">#&gt;   &lt;date&gt;     &lt;fct&gt;     &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 2024-01-01 baseline -1.16 </span></span>
-<span><span class="co">#&gt; 2 2024-01-01 Temp+0C  -1.16 </span></span>
-<span><span class="co">#&gt; 3 2024-01-01 Temp+2C   0.841</span></span>
-<span><span class="co">#&gt; 4 2024-01-01 Temp+5C   3.84 </span></span>
-<span><span class="co">#&gt; 5 2024-01-02 baseline -1.29 </span></span>
-<span><span class="co">#&gt; 6 2024-01-02 Temp+0C  -1.29</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="rainfall-scenarios-baselinedryweterratic">Rainfall scenarios (baseline/dry/wet/erratic)<a class="anchor" aria-label="anchor" href="#rainfall-scenarios-baselinedryweterratic"></a>
-</h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_rainfall_scenarios.html">simulate_rainfall_scenarios</a></span><span class="op">(</span></span>
-<span>  <span class="va">weather_nl</span>,</span>
-<span>  times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2012-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">90</span>,</span>
-<span>  scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span>,<span class="st">"dry"</span>,<span class="st">"wet"</span>,<span class="st">"erratic"</span><span class="op">)</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">series</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 4</span></span>
-<span><span class="co">#&gt;   date       month scenario rain_mm</span></span>
-<span><span class="co">#&gt;   &lt;date&gt;     &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 2012-01-01     1 baseline     0  </span></span>
-<span><span class="co">#&gt; 2 2012-01-02     1 baseline     0  </span></span>
-<span><span class="co">#&gt; 3 2012-01-03     1 baseline     0  </span></span>
-<span><span class="co">#&gt; 4 2012-01-04     1 baseline     0  </span></span>
-<span><span class="co">#&gt; 5 2012-01-05     1 baseline     0.4</span></span>
-<span><span class="co">#&gt; 6 2012-01-06     1 baseline     0</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span><span class="op">)</span> <span class="va">sim</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"></p>
-</div>
-<div class="section level2">
-<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
-</h2>
-<p>Issues and pull requests are welcome via the repo’s <a href="https://github.com/jbaafi/climecol/issues" class="external-link">issue tracker</a>.</p>
+<p>If you use <code>climecol</code> in your research, please cite it as:</p>
+<p>Baafi, J. (2025). climecol: Tools for Archiving and Analyzing Climate Data for Ecological Modeling. R package version 0.1.9. Available at: <a href="https://github.com/jbaafi/climecol" class="external-link uri">https://github.com/jbaafi/climecol</a></p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
 </h2>
-<p>If you’re interested in discussing collaborations or have questions about <code>climecol</code>, email me at <a href="mailto:jbaafi@mun.ca" class="email">jbaafi@mun.ca</a>.</p>
+<p>For questions or collaboration:</p>
+<p>Joseph Baafi — <a href="mailto:jbaafi@mun.ca" class="email">jbaafi@mun.ca</a></p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
