@@ -10,8 +10,14 @@ logo:
   href: index.html
 
 home:
-  title: climecol
-  description: Tools for climate/weather data in ecological modelling
+  title: "climecol"
+  tagline: "Reproducible climate and weather data tools for ecological and infectious-disease modeling."
+  description: >
+    Tools for archiving, validating, analyzing, and simulating weather and climate data
+    for ecological and infectious-disease modeling. `climecol` streamlines reproducible
+    workflows by combining curated datasets, gap-filling and QA utilities, photoperiod
+    and seasonal fitting functions, and stochastic rainfall and temperature scenario
+    generation — all designed for climate-driven ecological research.
 
 navbar:
   structure:

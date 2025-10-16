@@ -101,7 +101,7 @@ See the pkgdown site for detailed guides:
 
 If you use `climecol` in your research, please cite it as:
 
-Baafi, J. (2025). climecol: Tools for Archiving and Analyzing Climate Data for Ecological Modeling.
+Baafi, J., & Hurford, A. (2025). climecol: Tools for Archiving and Analyzing Climate Data for Ecological Modeling.
 R package version 0.1.9. Available at: https://github.com/jbaafi/climecol
 
 
