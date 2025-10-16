@@ -63,8 +63,6 @@ qa$summary
 ``` r
 # Plot daily rainfall
 plot_rainfall(weather_nl)
-#> Warning: Removed 371 rows containing missing values or values outside the scale range
-#> (`geom_col()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
