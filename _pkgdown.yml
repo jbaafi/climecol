@@ -23,7 +23,6 @@ navbar:
   structure:
     left:  [getting-started, reference, articles, news]
     right: [search, github]
-  #logo: man/figures/logo.png
 
   components:
     getting-started:

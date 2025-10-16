@@ -1,36 +1,45 @@
-test_that("weather_nl dataset is available and well-formed", {
-  data(weather_nl, package = "climecol")
-  df <- normalize_weather_names(weather_nl)
-  expect_true(all(c("date", "rain_mm") %in% names(df)))
-  expect_true(inherits(df$date, "Date"))
-  expect_true(is.numeric(df$rain_mm) || is.integer(df$rain_mm))
+# tests/testthat/test-plot_rainfall.R
+
+test_that("plot_rainfall returns a ggplot for single-year data", {
+  data(weather_nl)
+  one_year <- subset(weather_nl, date >= as.Date("2012-01-01") & date <= as.Date("2012-12-31"))
+
+  p <- plot_rainfall(one_year)
+  expect_s3_class(p, "ggplot")
+  # should have one layer (geom_line)
+  expect_equal(length(p$layers), 1L)
+  # data attached to the plot has needed columns
+  expect_true(all(c("date", "rain_mm") %in% names(p$data)))
 })
 
-test_that("plot_rainfall returns a ggplot object", {
-  data(weather_nl, package = "climecol")
+test_that("plot_rainfall returns a ggplot for multi-year data", {
+  data(weather_nl)
   p <- plot_rainfall(weather_nl)
   expect_s3_class(p, "ggplot")
+  expect_equal(length(p$layers), 1L)
+  expect_true(all(c("date", "rain_mm") %in% names(p$data)))
 })
 
-test_that("plot_rainfall errors clearly when required columns are missing", {
-  df <- tibble::tibble(x = 1:3, y = 2:4)
-  expect_error(plot_rainfall(df), regexp = "date|rain_mm")
+test_that("plot_rainfall honors color and linewidth", {
+  data(weather_nl)
+  col <- "#56B4E9"
+  lw  <- 0.8
+  p <- plot_rainfall(weather_nl, color = col, linewidth = lw)
+
+  lp <- p$layers[[1]]$aes_params
+  # ggplot2 stores these as 'colour' and 'linewidth'
+  expect_identical(lp$colour, col)
+  expect_identical(lp$linewidth, lw)
 })
 
-test_that("plot_rainfall accepts character dates and coerces to Date", {
-  df <- data.frame(
-    Date    = c("2020-01-01", "2020-01-02"),
-    Rain_mm = c(0, 5)
-  )
-  p <- plot_rainfall(df)
+test_that("plot_rainfall faceting by year works", {
+  data(weather_nl)
+  p <- plot_rainfall(weather_nl, facet_by_year = TRUE)
   expect_s3_class(p, "ggplot")
+  expect_true(inherits(p$facet, "FacetWrap"))
 })
 
-test_that("plot_rainfall handles zero and NA rainfall values", {
-  df <- data.frame(
-    Date    = as.Date(c("2020-01-01", "2020-01-02", "2020-01-03")),
-    Rain_mm = c(0, NA_real_, 12.5)
-  )
-  p <- plot_rainfall(df)
-  expect_s3_class(p, "ggplot")
+test_that("plot_rainfall errors when required columns are missing", {
+  bad <- data.frame(date = as.Date("2020-01-01") + 0:5, rain = runif(6))
+  expect_error(plot_rainfall(bad), "date.*rain_mm")
 })

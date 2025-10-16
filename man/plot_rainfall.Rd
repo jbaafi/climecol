@@ -2,24 +2,44 @@
 % Please edit documentation in R/plot_rainfall.R
 \name{plot_rainfall}
 \alias{plot_rainfall}
-\title{Plot Daily Rainfall}
+\title{Plot Daily Rainfall (smart axis, optional yearly facets)}
 \usage{
-plot_rainfall(df)
+plot_rainfall(
+  df,
+  title = "Daily Rainfall",
+  color = "#0072B2",
+  linewidth = 0.5,
+  facet_by_year = FALSE
+)
 }
 \arguments{
-\item{df}{A data frame with columns:
-\describe{
-\item{Date}{Date of observation (Date or character convertible to Date)}
-\item{Rain_mm}{Daily rainfall total in millimeters (numeric)}
-}}
+\item{df}{A tibble/data frame with at least \code{date} (Date) and \code{rain_mm} (numeric).}
+
+\item{title}{Plot title. Default: "Daily Rainfall".}
+
+\item{color}{Line color. Default: ggplot2 blue ("#0072B2").}
+
+\item{linewidth}{Line width for \code{geom_line()}. Default: 0.5.}
+
+\item{facet_by_year}{Logical; if TRUE, facet into one panel per calendar year.}
 }
 \value{
-A ggplot object showing rainfall over time.
+A ggplot object.
 }
 \description{
-Creates a simple bar chart of daily rainfall totals using ggplot2.
+Creates a clean ggplot2 line plot of daily rainfall totals with automatic
+x-axis scaling (months for ≤ 1 year, years for multi-year data) and optional
+faceting by year.
 }
 \examples{
 data(weather_nl)
+# Auto x-axis scaling
 plot_rainfall(weather_nl)
+
+# Faceted version
+plot_rainfall(weather_nl, facet_by_year = TRUE)
+
+# Custom color and title (ASCII dash)
+plot_rainfall(weather_nl, title = "Rainfall in St John's (2008-2023)",
+              color = "#56B4E9", linewidth = 0.8)
 }
