@@ -1,13 +1,51 @@
 #' Validate a standardized weather table
 #'
+#' Performs quick quality assurance checks on a weather dataset to identify
+#' missing dates, out-of-range values, or internal inconsistencies.
+#'
 #' @param df Tibble from read_weather_csv() with at least `date` and `station`.
-#' @param temp_bounds numeric(2). Allowed °C range for temps. Default c(-60, 60).
-#' @param rain_max numeric(1). Max plausible daily rain (mm). Default 200.
-#' @param snow_max numeric(1). Max plausible daily snow (cm). Default Inf.
-#' @param check_precip_consistency logical. Check precip vs rain/SWE. Default TRUE.
-#' @param swe_ratio numeric(1). mm water per cm snow (SWE). Default 10.
-#' @return list(summary = tibble, flags = tibble)
+#' @param temp_bounds numeric(2). Allowed °C range for temperature values.
+#'   Default is `c(-60, 60)`.
+#' @param rain_max numeric(1). Maximum plausible daily rainfall (mm).
+#'   Default is `200`.
+#' @param snow_max numeric(1). Maximum plausible daily snowfall (cm).
+#'   Default is `Inf`.
+#' @param check_precip_consistency logical. If TRUE, check consistency between
+#'   total precipitation and rainfall/snow water equivalent (SWE). Default TRUE.
+#' @param swe_ratio numeric(1). Conversion ratio of mm water per cm snow (SWE).
+#'   Default is `10`.
+#'
+#' @return A list with:
+#' \describe{
+#'   \item{summary}{A one-row tibble with dataset-level QA metrics.}
+#'   \item{flags}{A tibble of per-record flags for issues such as missing or
+#'   out-of-range values.}
+#' }
+#'
+#' @details
+#' The summary tibble returned by `validate_weather()` reports data coverage
+#' and quality metrics:
+#'
+#' | Column             | Meaning |
+#' |--------------------|----------|
+#' | `n_rows`           | Total number of rows in the dataset |
+#' | `stations`         | Number of unique stations |
+#' | `span_start`       | Earliest date in the dataset |
+#' | `span_end`         | Latest date in the dataset |
+#' | `n_missing_dates`  | Missing expected calendar days |
+#' | `n_negative_values`| Count of physically impossible negatives |
+#' | `n_tmax_lt_tmin`   | Days where Tmax < Tmin |
+#' | `n_temp_oob`       | Temperature out of bounds |
+#' | `n_rain_gt_max`    | Rainfall exceeding threshold |
+#' | `n_snow_gt_max`    | Snowfall exceeding threshold |
+#'
 #' @export
+#'
+#' @examples
+#' data(weather_nl)
+#'
+#' qa <- validate_weather(weather_nl)
+#' qa$summary
 validate_weather <- function(df,
                              temp_bounds = c(-60, 60),
                              rain_max = 200,
@@ -103,7 +141,7 @@ validate_weather <- function(df,
       dplyr::mutate(flag = "gust_dir_out_of_range")
   }
 
-  # C) precipitation consistency (optional)
+  # C) precipitation consistency
   if (isTRUE(check_precip_consistency) && has("precip_mm")) {
     cons_flags <- list()
 

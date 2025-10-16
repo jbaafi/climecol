@@ -1,13 +1,45 @@
 #' Summarise gaps in daily weather records
 #'
-#' Provides simple coverage metrics per station (and optionally by month).
+#' Provides coverage and continuity metrics per station or per station–month.
+#' This function is useful for quickly checking the completeness of daily
+#' weather time series before downstream analysis.
 #'
-#' @param df Tibble with at least `date` and `station`.
+#' @param df Tibble with at least `date` and `station` columns.
 #' @param by Character, one of `"station"` (default) or `"month"`.
-#'   If `"month"`, summaries are returned per station-month.
+#'   If `"month"`, summaries are returned per station–month combination.
 #'
-#' @return tibble with counts: total days, missing days, coverage proportion,
-#'   number of contiguous gaps, and longest gap length.
+#' @return
+#' A tibble summarising record coverage with the following columns:
+#' \describe{
+#'   \item{station}{Station name or ID.}
+#'   \item{n_days}{Total number of days in the span.}
+#'   \item{n_missing}{Number of missing calendar days.}
+#'   \item{coverage}{Proportion of days present (1 = complete).}
+#'   \item{n_gaps}{Number of contiguous missing-day gaps.}
+#'   \item{longest_gap}{Length (days) of the longest missing period.}
+#' }
+#'
+#' @details
+#' If the input has already been passed through
+#' \code{\link{complete_daily_calendar}()}, this function will recognise and
+#' reuse its internal `is_missing_row` flag; otherwise it infers missing days
+#' automatically from the date span.
+#'
+#' @examples
+#' data(weather_nl)
+#'
+#' # Summarise completeness by station
+#' summarise_gaps(weather_nl, by = "station")
+#'
+#' #> # A tibble: 2 × 6
+#' #>   station             n_days n_missing coverage n_gaps longest_gap
+#' #>   <chr>                <int>     <int>    <dbl>  <int>       <int>
+#' #> 1 ST JOHN'S A           1827         0    1.00       0           0
+#' #> 2 ST. JOHN'S INTL A     4017         0    1.00       0           0
+#'
+#' # Monthly view (truncated example)
+#' head(summarise_gaps(weather_nl, by = "month"))
+#'
 #' @export
 summarise_gaps <- function(df, by = c("station", "month")) {
   by <- match.arg(by)
@@ -21,14 +53,33 @@ summarise_gaps <- function(df, by = c("station", "month")) {
 
   # Build a unified "missing" flag:
   # - missing row added by complete_daily_calendar(), OR
-  # - existing row whose non-key columns are all NA
   non_key <- setdiff(names(df), c("station", "date", "is_missing_row", "month"))
-  all_na_content <- if (length(non_key) == 0) {
+
+  all_na_content <- if (length(non_key) == 0L) {
     rep(FALSE, nrow(df))
   } else {
-    apply(df[non_key], 1, function(r) all(is.na(r)))
+    apply(df[, non_key, drop = FALSE], 1L, function(r) all(is.na(r)))
   }
+
   missing_flag <- (("is_missing_row" %in% names(df)) & isTRUE(df$is_missing_row)) | all_na_content
+
+  df <- df |>
+    dplyr::mutate(
+      month = format(.data$date, "%Y-%m"),
+      .missing_for_gaps = missing_flag
+    )
+
+  # safe access to is_missing_row (vector), default FALSE if column absent
+  missing_row <- if ("is_missing_row" %in% names(df)) {
+    # coerce to logical, replace NA with FALSE
+    r <- as.logical(df$is_missing_row)
+    r[is.na(r)] <- FALSE
+    r
+  } else {
+    rep(FALSE, nrow(df))
+  }
+
+  missing_flag <- missing_row | all_na_content
 
   df <- df |>
     dplyr::mutate(

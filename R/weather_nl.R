@@ -1,4 +1,4 @@
-#' Newfoundland daily weather example
+#' Newfoundland (St. John's A. area) daily weather data
 #'
 #' A curated daily weather dataset for a Newfoundland station, suitable for
 #' examples and vignettes. Columns are standardized to match the package's
@@ -16,7 +16,7 @@
 #'
 #'   \item{Year}{Calendar year (integer).}
 #'   \item{Month}{Calendar month (1–12, integer).}
-#'   \item{Day}{Calendar day of month (1–31, integer).}
+#'   \item{Day}{Calendar day of month (integer).}
 #'
 #'   \item{Station.Name}{Station name as provided by the source (character).}
 #'   \item{Climate.ID}{Environment Canada climate station ID (character).}

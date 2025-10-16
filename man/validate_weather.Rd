@@ -16,19 +16,52 @@ validate_weather(
 \arguments{
 \item{df}{Tibble from read_weather_csv() with at least \code{date} and \code{station}.}
 
-\item{temp_bounds}{numeric(2). Allowed °C range for temps. Default c(-60, 60).}
+\item{temp_bounds}{numeric(2). Allowed °C range for temperature values.
+Default is \code{c(-60, 60)}.}
 
-\item{rain_max}{numeric(1). Max plausible daily rain (mm). Default 200.}
+\item{rain_max}{numeric(1). Maximum plausible daily rainfall (mm).
+Default is \code{200}.}
 
-\item{snow_max}{numeric(1). Max plausible daily snow (cm). Default Inf.}
+\item{snow_max}{numeric(1). Maximum plausible daily snowfall (cm).
+Default is \code{Inf}.}
 
-\item{check_precip_consistency}{logical. Check precip vs rain/SWE. Default TRUE.}
+\item{check_precip_consistency}{logical. If TRUE, check consistency between
+total precipitation and rainfall/snow water equivalent (SWE). Default TRUE.}
 
-\item{swe_ratio}{numeric(1). mm water per cm snow (SWE). Default 10.}
+\item{swe_ratio}{numeric(1). Conversion ratio of mm water per cm snow (SWE).
+Default is \code{10}.}
 }
 \value{
-list(summary = tibble, flags = tibble)
+A list with:
+\describe{
+\item{summary}{A one-row tibble with dataset-level QA metrics.}
+\item{flags}{A tibble of per-record flags for issues such as missing or
+out-of-range values.}
+}
 }
 \description{
-Validate a standardized weather table
+Performs quick quality assurance checks on a weather dataset to identify
+missing dates, out-of-range values, or internal inconsistencies.
+}
+\details{
+The summary tibble returned by \code{validate_weather()} reports data coverage
+and quality metrics:\tabular{ll}{
+   Column \tab Meaning \cr
+   \code{n_rows} \tab Total number of rows in the dataset \cr
+   \code{stations} \tab Number of unique stations \cr
+   \code{span_start} \tab Earliest date in the dataset \cr
+   \code{span_end} \tab Latest date in the dataset \cr
+   \code{n_missing_dates} \tab Missing expected calendar days \cr
+   \code{n_negative_values} \tab Count of physically impossible negatives \cr
+   \code{n_tmax_lt_tmin} \tab Days where Tmax < Tmin \cr
+   \code{n_temp_oob} \tab Temperature out of bounds \cr
+   \code{n_rain_gt_max} \tab Rainfall exceeding threshold \cr
+   \code{n_snow_gt_max} \tab Snowfall exceeding threshold \cr
+}
+}
+\examples{
+data(weather_nl)
+
+qa <- validate_weather(weather_nl)
+qa$summary
 }

@@ -6,7 +6,7 @@
 \usage{
 simulate_temp_shifts(
   fit,
-  deltas = 0:5,
+  deltas = 1:5,
   model = "best",
   dates = NULL,
   as_long = TRUE
@@ -15,7 +15,7 @@ simulate_temp_shifts(
 \arguments{
 \item{fit}{A result list from \code{\link[=fit_seasonal_temp]{fit_seasonal_temp()}}.}
 
-\item{deltas}{Numeric vector of °C increments to add (default 0:5).}
+\item{deltas}{Numeric vector of °C increments to add (default 1:5).}
 
 \item{model}{Which fitted model to use. Use \code{"best"} (default; lowest AIC)
 or a specific model name present in \code{fit$metrics$model} (e.g., \code{"sin1"}).}
@@ -34,16 +34,16 @@ provided), plus simulated temperatures across scenarios.
 }
 \description{
 Given the output of \code{\link[=fit_seasonal_temp]{fit_seasonal_temp()}}, generate temperature scenarios
-by adding fixed deltas (e.g., +0 to +5 °C) to the fitted daily mean cycle.
+by adding fixed deltas (e.g., +1°C to +5°C) to the fitted daily mean cycle.
 }
 \examples{
 data(weather_nl)
 fit <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"))
-sims <- simulate_temp_shifts(fit, deltas = 0:5)      # long format over DOY
+sims <- simulate_temp_shifts(fit, deltas = 1:5)      # long format over DOY
 head(sims)
 
 # Map to actual dates:
 days <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
-sims_dates <- simulate_temp_shifts(fit, deltas = c(0, 2, 5), dates = days, model = "best")
+sims_dates <- simulate_temp_shifts(fit, deltas = c(1, 3, 5), dates = days, model = "best")
 head(sims_dates)
 }

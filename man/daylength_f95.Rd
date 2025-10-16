@@ -7,16 +7,39 @@
 daylength_f95(date, lat)
 }
 \arguments{
-\item{date}{Date vector.}
+\item{date}{Date vector (can be length > 1). Leap years are handled
+automatically.}
 
-\item{lat}{Latitude in decimal degrees (-90..90).}
+\item{lat}{Latitude in decimal degrees, −90 ≤ lat ≤ 90 . May be a scalar or
+a vector of the same length as \code{date}.}
 }
 \value{
-Numeric vector of daylight length in hours.
+A numeric vector of daylight length in hours, same length and order
+as \code{date}.
 }
 \description{
-Fast, dependency-free daylight length given date and latitude.
+Computes daily photoperiod (hours of daylight) from latitude and date using
+the empirical solar‐geometry approximation of Forsythe et al. (1995).
+The method assumes standard atmospheric refraction and solar disk radius
+corrections (−0.833 °) at sunrise/sunset.  It is fast, vectorized, and has
+no external dependencies.
+}
+\examples{
+# Single date, single latitude
+daylength_f95(as.Date("2024-06-21"), lat = 47.56)   # ≈ 15.977 h at St John's NL
+
+# Vector of dates for one latitude
+d <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "month")
+daylength_f95(d, lat = 47.56)
+
+# Vectorized over latitude
+lats <- c(0, 30, 60)
+daylength_f95(as.Date("2024-06-21"), lat = lats)
+
 }
 \references{
-Forsythe, W. C. et al. (1995) Ecol. Modelling 80: 1–13.
+Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H.-I., & Schoolfield, R. M. (1995).
+A model comparison for daylength as a function of latitude and day of year.
+\emph{Ecological Modelling}, 80(1), 87-95.
+\url{https://doi.org/10.1016/0304-3800(94)00034-F}
 }

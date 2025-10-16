@@ -20,5 +20,3 @@ utils::globalVariables(c(
   "avg_photo"
 ))
 
-# If future NSE notes appear, add their symbols here, e.g.:
-# utils::globalVariables(c("some_new_col"))

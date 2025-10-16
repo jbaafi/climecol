@@ -1,15 +1,15 @@
 ## data-raw/weather_nl.R
 # Build the shipped `weather_nl` dataset
 
-# ---- packages (only for this script) ----
+# ---- packages
 library(readr)
 library(dplyr)
 library(usethis)
 
-# ---- read raw CSV (keep the raw file intact) ----
+# ---- read raw CSV
 raw <- read_csv("data-raw/weather_nl.csv", show_col_types = FALSE)
 
-# ---- curate: keep the fields you want to ship ----
+# ---- curate: keep the fields you want to ship
 weather_nl <- raw |>
   transmute(
     # lowercase 'date' to match package API
@@ -37,11 +37,11 @@ weather_nl <- raw |>
   ) |>
   arrange(date)
 
-# ---- basic sanity checks (optional) ----
+# ---- basic sanity checks
 stopifnot(all(weather_nl$Month %in% 1:12))
 stopifnot(all(weather_nl$Day   %in% 1:31))
 stopifnot(inherits(weather_nl$date, "Date"))
 stopifnot("station" %in% names(weather_nl))
 
-# ---- save curated object to the package ----
+# ---- save curated object to the package
 usethis::use_data(weather_nl, overwrite = TRUE)

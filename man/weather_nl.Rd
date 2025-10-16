@@ -3,7 +3,7 @@
 \docType{data}
 \name{weather_nl}
 \alias{weather_nl}
-\title{Newfoundland daily weather example}
+\title{Newfoundland (St. John's A. area) daily weather data}
 \format{
 A tibble with the following columns:
 \describe{
@@ -17,7 +17,7 @@ A tibble with the following columns:
 
 \item{Year}{Calendar year (integer).}
 \item{Month}{Calendar month (1–12, integer).}
-\item{Day}{Calendar day of month (1–31, integer).}
+\item{Day}{Calendar day of month (integer).}
 
 \item{Station.Name}{Station name as provided by the source (character).}
 \item{Climate.ID}{Environment Canada climate station ID (character).}

@@ -3,7 +3,7 @@
 #' Samples daily rainfall by drawing (with replacement) from the empirical
 #' distribution of the *same calendar month* across all years, then applies
 #' simple scenario transforms (baseline/dry/wet/erratic). This preserves
-#' monthly seasonality and zero proportions while allowing stochastic realisations.
+#' monthly seasonality while allowing stochastic realisations.
 #'
 #' @param df A data frame containing at least a date column and rainfall.
 #'   Works out-of-the-box with `weather_nl`. If column names differ, they will
@@ -135,7 +135,7 @@ simulate_rainfall_scenarios <- function(df,
       ggplot2::geom_line(alpha = 0.8) +
       ggplot2::labs(x = "Date", y = "Rainfall (mm)", color = "Scenario",
                     title = "Simulated daily rainfall scenarios (monthly-seasonal sampling)") +
-      ggplot2::theme_minimal()
+      ggplot2::theme_bw()
   }
 
   list(series = series, plot = gp)

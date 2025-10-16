@@ -7,18 +7,64 @@
 complete_daily_calendar(df, start = NULL, end = NULL, by = "day")
 }
 \arguments{
-\item{df}{Tibble with at least \code{date} and \code{station}.}
+\item{df}{Tibble with at least \code{date} (Date) and \code{station} (character).}
 
-\item{start}{Optional \code{Date} scalar. If \code{NULL}, uses per-station min date.}
+\item{start}{Optional \code{Date} scalar. Overall lower bound for the calendar; if
+\code{NULL} (default), each station uses its own minimum observed date.}
 
-\item{end}{Optional \code{Date} scalar. If \code{NULL}, uses per-station max date.}
+\item{end}{Optional \code{Date} scalar. Overall upper bound for the calendar; if
+\code{NULL} (default), each station uses its own maximum observed date.}
 
 \item{by}{Sequence step; only \code{"day"} is supported.}
 }
 \value{
-A tibble with a full daily calendar per station and a logical
-column \code{is_missing_row} indicating rows that were absent in the input.
+A tibble with a full daily calendar per station and a logical column
+\code{is_missing_row} indicating rows that were not present in the input.
 }
 \description{
-Complete the daily calendar per station and mark gaps
+Expands each station's date range to a complete daily sequence and flags which
+rows were \strong{absent} in the original data. This is a structural step only—
+it does not fill values (see \code{\link[=impute_weather]{impute_weather()}} for gap filling).
+}
+\details{
+\itemize{
+\item Input rows are preserved as-is; new calendar rows get \code{NA} for data fields
+and \code{is_missing_row = TRUE}.
+\item Use \code{\link[=summarise_gaps]{summarise_gaps()}} to quantify coverage (e.g., counts of missing days
+and longest gap) after calling this function.
+\item Use \code{\link[=impute_weather]{impute_weather()}} if you want to fill the missing values created by
+the calendar expansion.
+}
+}
+\section{Typical workflow}{
+
+\enumerate{
+\item \code{df <- normalize_weather_names(df)} (optional—helps standardize columns)
+\item \code{cal <- complete_daily_calendar(df)} (make gaps explicit)
+\item \code{summarise_gaps(cal)} (report coverage)
+\item \code{imp <- impute_weather(cal, method = "locf")} (optional gap filling)
+}
+}
+
+\examples{
+data(weather_nl)
+
+# Make sure column names align with climecol helpers
+wx <- normalize_weather_names(weather_nl)
+
+# Expand to full per-station daily calendar
+cal <- complete_daily_calendar(wx)
+head(cal)
+
+# Summarise coverage (per station)
+summarise_gaps(cal, by = "station")
+
+# Restrict to a fixed date window for all stations
+rng_start <- as.Date("2015-01-01")
+rng_end   <- as.Date("2016-12-31")
+cal_fixed <- complete_daily_calendar(wx, start = rng_start, end = rng_end)
+
+}
+\seealso{
+\code{\link[=summarise_gaps]{summarise_gaps()}}, \code{\link[=impute_weather]{impute_weather()}}, \code{\link[=validate_weather]{validate_weather()}}
 }

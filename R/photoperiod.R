@@ -1,10 +1,37 @@
 #' Daylength (photoperiod) in hours (Forsythe et al. 1995)
 #'
-#' Fast, dependency-free daylight length given date and latitude.
-#' @param date Date vector.
-#' @param lat  Latitude in decimal degrees (-90..90).
-#' @return Numeric vector of daylight length in hours.
-#' @references Forsythe, W. C. et al. (1995) Ecol. Modelling 80: 1–13.
+#' Computes daily photoperiod (hours of daylight) from latitude and date using
+#' the empirical solar‐geometry approximation of Forsythe et al. (1995).
+#' The method assumes standard atmospheric refraction and solar disk radius
+#' corrections (−0.833 °) at sunrise/sunset.  It is fast, vectorized, and has
+#' no external dependencies.
+#'
+#' @param date Date vector (can be length > 1). Leap years are handled
+#'   automatically.
+#' @param lat Latitude in decimal degrees, −90 ≤ lat ≤ 90 . May be a scalar or
+#'   a vector of the same length as `date`.
+#'
+#' @return A numeric vector of daylight length in hours, same length and order
+#'   as `date`.
+#'
+#' @references
+#' Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H.-I., & Schoolfield, R. M. (1995).
+#' A model comparison for daylength as a function of latitude and day of year.
+#' *Ecological Modelling*, 80(1), 87-95.
+#' <https://doi.org/10.1016/0304-3800(94)00034-F>
+#'
+#' @examples
+#' # Single date, single latitude
+#' daylength_f95(as.Date("2024-06-21"), lat = 47.56)   # ≈ 15.977 h at St John's NL
+#'
+#' # Vector of dates for one latitude
+#' d <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "month")
+#' daylength_f95(d, lat = 47.56)
+#'
+#' # Vectorized over latitude
+#' lats <- c(0, 30, 60)
+#' daylength_f95(as.Date("2024-06-21"), lat = lats)
+#'
 #' @export
 daylength_f95 <- function(date, lat) {
   date <- as.Date(date)
@@ -149,9 +176,11 @@ photoperiod_year <- function(year, lat = NULL, location = NULL,
 
 #' Built-in photoperiod sites
 #'
-#' Convenience key → latitude mapping used by [photoperiod_year()].
+#' Convenience mapping of site keys to latitude (decimal degrees),
+#' used internally by [photoperiod_year()] to allow location-based input
+#' instead of numeric latitude.
 #'
-#' The following keys are provided:
+#' The following site keys are included:
 #' \itemize{
 #'   \item \code{st_johns} — 47.56 (St. John's, NL, Canada)
 #'   \item \code{saint_john} — 45.27 (Saint John, NB, Canada)
@@ -161,8 +190,8 @@ photoperiod_year <- function(year, lat = NULL, location = NULL,
 #'   \item \code{ain_mahbel} — 34.24 (Algeria)
 #' }
 #'
-#' Keys are matched case-insensitively and punctuation/spacing is ignored by
-#' the internal normalizer. For example, \code{"St John's"}, \code{"st_johns"},
+#' Keys are matched case-insensitively, and punctuation or spacing is ignored
+#' by the internal normalizer. For example, \code{"St John's"}, \code{"st_johns"},
 #' and \code{"St.Johns"} all resolve to \code{st_johns}; \code{"Saint John"} or
 #' \code{"st john"} resolve to \code{saint_john}.
 #'
@@ -170,11 +199,13 @@ photoperiod_year <- function(year, lat = NULL, location = NULL,
 #'   latitudes (decimal degrees).
 #'
 #' @examples
-#' # list available keys
+#' # List all available keys
 #' photoperiod_sites()
 #'
-#' # use with photoperiod_year()
+#' # Retrieve daily photoperiod for a built-in location
 #' photoperiod_year(2024, location = "St John's") |> head()
+#'
+#' # Or compute monthly means
 #' photoperiod_year(2024, location = "Saint John", aggregate = "month")
 #'
 #' @export

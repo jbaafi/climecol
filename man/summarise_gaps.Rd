@@ -7,15 +7,46 @@
 summarise_gaps(df, by = c("station", "month"))
 }
 \arguments{
-\item{df}{Tibble with at least \code{date} and \code{station}.}
+\item{df}{Tibble with at least \code{date} and \code{station} columns.}
 
 \item{by}{Character, one of \code{"station"} (default) or \code{"month"}.
-If \code{"month"}, summaries are returned per station-month.}
+If \code{"month"}, summaries are returned per station–month combination.}
 }
 \value{
-tibble with counts: total days, missing days, coverage proportion,
-number of contiguous gaps, and longest gap length.
+A tibble summarising record coverage with the following columns:
+\describe{
+\item{station}{Station name or ID.}
+\item{n_days}{Total number of days in the span.}
+\item{n_missing}{Number of missing calendar days.}
+\item{coverage}{Proportion of days present (1 = complete).}
+\item{n_gaps}{Number of contiguous missing-day gaps.}
+\item{longest_gap}{Length (days) of the longest missing period.}
+}
 }
 \description{
-Provides simple coverage metrics per station (and optionally by month).
+Provides coverage and continuity metrics per station or per station–month.
+This function is useful for quickly checking the completeness of daily
+weather time series before downstream analysis.
+}
+\details{
+If the input has already been passed through
+\code{\link{complete_daily_calendar}()}, this function will recognise and
+reuse its internal \code{is_missing_row} flag; otherwise it infers missing days
+automatically from the date span.
+}
+\examples{
+data(weather_nl)
+
+# Summarise completeness by station
+summarise_gaps(weather_nl, by = "station")
+
+#> # A tibble: 2 × 6
+#>   station             n_days n_missing coverage n_gaps longest_gap
+#>   <chr>                <int>     <int>    <dbl>  <int>       <int>
+#> 1 ST JOHN'S A           1827         0    1.00       0           0
+#> 2 ST. JOHN'S INTL A     4017         0    1.00       0           0
+
+# Monthly view (truncated example)
+head(summarise_gaps(weather_nl, by = "month"))
+
 }

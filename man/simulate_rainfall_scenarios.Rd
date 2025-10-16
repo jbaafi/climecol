@@ -51,7 +51,7 @@ A list with:
 Samples daily rainfall by drawing (with replacement) from the empirical
 distribution of the \emph{same calendar month} across all years, then applies
 simple scenario transforms (baseline/dry/wet/erratic). This preserves
-monthly seasonality and zero proportions while allowing stochastic realisations.
+monthly seasonality while allowing stochastic realisations.
 }
 \details{
 For each simulated day, the function identifies that day’s calendar month and
