@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climecol</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,19 +66,17 @@
     
     
 <div class="section level2">
-<h2 id="why-climecol">Why <code>climecol</code>?<a class="anchor" aria-label="anchor" href="#why-climecol"></a>
+<h2 id="why-climecol">Why climecol?<a class="anchor" aria-label="anchor" href="#why-climecol"></a>
 </h2>
-<p><code>climecol</code> helps you archive, explore, and use
-climate/weather data in ecological and infectious-disease models:</p>
+<p><code>climecol</code> provides a lightweight, reproducible workflow
+for archiving, analyzing, and visualizing weather and climate data in
+ecological and infectious-disease modeling contexts.</p>
+<p>It includes:</p>
 <ul>
-<li><p>Ships example daily weather data (Newfoundland) so you can
-prototype fast.</p></li>
-<li><p>Provides photoperiod (daylength) functions (no dependencies) for
-seasonal drivers.</p></li>
-<li><p>Includes simple plotting/helpers for quick QA and
-communication.</p></li>
-<li><p>Designed for reproducible workflows (works offline,
-CI-friendly).</p></li>
+<li>Curated daily weather data (Newfoundland example dataset)</li>
+<li>Fast, dependency-free photoperiod (daylength) functions</li>
+<li>Simple tools for quality checks, gap handling, and plotting</li>
+<li>Functions designed for offline and reproducible pipelines</li>
 </ul>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -86,26 +84,35 @@ CI-friendly).</p></li>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jbaafi/climecol"</span><span class="op">)</span></span></code></pre></div>
-<p>Load the package:</p>
+<p>Then load the package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="loading-data">Loading Data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
+<h3 id="loading-and-validating-weather-data">Loading and validating weather data<a class="anchor" aria-label="anchor" href="#loading-and-validating-weather-data"></a>
 </h3>
+<p>You can import and validate your weather data from a .csv file as
+follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_weather_csv.html">read_weather_csv</a></span><span class="op">(</span><span class="st">"data-raw/combined_data.csv"</span><span class="op">)</span></span>
 <span><span class="va">wx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">wx</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">qa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/validate_weather.html">validate_weather</a></span><span class="op">(</span><span class="va">wx</span>, temp_bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">50</span>, <span class="fl">50</span><span class="op">)</span>, rain_max <span class="op">=</span> <span class="fl">150</span>, snow_max <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span><span class="va">qa</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
+<p>The validate_weather() summary reports:</p>
+<ul>
+<li>record span (span_start, span_end)</li>
+<li>missing days, out-of-bounds temperature values</li>
+<li>and unrealistic rainfall/snow totals flagged during checks.</li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="photoperiod-daylength">Photoperiod (daylength)<a class="anchor" aria-label="anchor" href="#photoperiod-daylength"></a>
 </h3>
-<p>The photoperiod helpers implement a standard solar-geometry
-approximation (Forsythe et al., 1995) and return hours of daylight from
-date and latitude (timezone/longitude not required).</p>
-<p>Daily photoperiod for a site</p>
+<p>The package implements the Forsythe et al. (1995) solar-geometry
+approximation to compute daylength (in hours) using only date and
+latitude, no timezone or longitude required.</p>
+<p>Example: daily photoperiod</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pp_nl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, location <span class="op">=</span> <span class="st">"St John's"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pp_nl</span><span class="op">)</span></span>
@@ -126,7 +133,7 @@ date and latitude (timezone/longitude not required).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pp_nl_m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, location <span class="op">=</span> <span class="st">"St John's"</span>,  aggregate <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
 <span><span class="va">pp_nb_m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/photoperiod_year.html">photoperiod_year</a></span><span class="op">(</span><span class="fl">2024</span>, location <span class="op">=</span> <span class="st">"Saint John"</span>, aggregate <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pp_nl_m</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pp_nb_m</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pp_nl_m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         date daylength_hours   lat location</span></span>
 <span><span class="co">#&gt; 1 2024-01-01         8.91655 47.56 st_johns</span></span>
 <span><span class="co">#&gt; 2 2024-02-01        10.20720 47.56 st_johns</span></span>
@@ -134,6 +141,7 @@ date and latitude (timezone/longitude not required).</p>
 <span><span class="co">#&gt; 4 2024-04-01        13.65218 47.56 st_johns</span></span>
 <span><span class="co">#&gt; 5 2024-05-01        15.16109 47.56 st_johns</span></span>
 <span><span class="co">#&gt; 6 2024-06-01        15.91251 47.56 st_johns</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pp_nb_m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         date daylength_hours   lat   location</span></span>
 <span><span class="co">#&gt; 1 2024-01-01        9.172983 45.27 saint_john</span></span>
 <span><span class="co">#&gt; 2 2024-02-01       10.354056 45.27 saint_john</span></span>
@@ -142,30 +150,29 @@ date and latitude (timezone/longitude not required).</p>
 <span><span class="co">#&gt; 5 2024-05-01       14.910968 45.27 saint_john</span></span>
 <span><span class="co">#&gt; 6 2024-06-01       15.593079 45.27 saint_john</span></span></code></pre></div>
 <blockquote>
-<p>Keys are matched case-insensitively; punctuation/spacing
-ignored.<br><code>"St John's"</code>, <code>"st_johns"</code>,
+<p>Tip: Site names are case-insensitive and punctuation-agnostic.</p>
+</blockquote>
+<blockquote>
+<p><code>"St John's"</code>, <code>"st_johns"</code>,
 <code>"St.Johns"</code> → <code>st_johns</code> (NL);
 <code>"Saint John"</code> / <code>"st john"</code> →
-<code>saint_john</code> (NB).<br>
-If you pass <code>lat</code> without <code>location</code>, results are
-labeled <code>lat_&lt;value&gt;</code>.</p>
+<code>saint_john</code> (NB).</p>
+</blockquote>
+<blockquote>
+<p>If you provide a numeric latitude instead of location, results are
+labeled lat_<value>.</value></p>
 </blockquote>
 </div>
 <div class="section level3">
-<h3 id="built-in-weather-data-temperature-rainfall">Built-in weather data (temperature &amp; rainfall)<a class="anchor" aria-label="anchor" href="#built-in-weather-data-temperature-rainfall"></a>
+<h3 id="example-dataset-newfoundland-20082023">Example dataset: Newfoundland (2008–2023)<a class="anchor" aria-label="anchor" href="#example-dataset-newfoundland-20082023"></a>
 </h3>
-<p><code>climecol</code> ships a Newfoundland daily weather dataset for
-examples and testing.</p>
+<p><code>climecol</code> ships daily weather dataset for Newfoundland
+and Labrador.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Start from the shipped dataset</span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">weather_nl</span></span>
-<span></span>
-<span><span class="co"># Normalize names to the climecol API</span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 5,844</span></span>
 <span><span class="co">#&gt; Columns: 13</span></span>
 <span><span class="co">#&gt; $ date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2008-01-01<span style="color: #949494;">, </span>2008-01-02<span style="color: #949494;">, </span>2008-01-03<span style="color: #949494;">, </span>2008-01-04<span style="color: #949494;">, </span>2008-01-…</span></span>
@@ -181,180 +188,64 @@ examples and testing.</p>
 <span><span class="co">#&gt; $ Station.Name <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A…</span></span>
 <span><span class="co">#&gt; $ Climate.ID   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>8403506<span style="color: #949494;">, </span>840…</span></span>
 <span><span class="co">#&gt; $ station      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A"<span style="color: #949494;">, </span>"ST JOHN'S A…</span></span></code></pre></div>
-<p>Columns and types</p>
+<p>Normalize column names for consistency:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  column <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>,</span>
-<span>  class  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">df</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, collapse<span class="op">=</span><span class="st">"/"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  example <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">df</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>; <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="cn">NA_character_</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cols</span>, caption <span class="op">=</span> <span class="st">"Columns in `df` with example values"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>Columns in <code>df</code> with example values</caption>
-<thead><tr class="header">
-<th align="left">column</th>
-<th align="left">class</th>
-<th align="left">example</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">date</td>
-<td align="left">Date</td>
-<td align="left">2008-01-01</td>
-</tr>
-<tr class="even">
-<td align="left">Year</td>
-<td align="left">integer</td>
-<td align="left">2008</td>
-</tr>
-<tr class="odd">
-<td align="left">Month</td>
-<td align="left">integer</td>
-<td align="left">1</td>
-</tr>
-<tr class="even">
-<td align="left">Day</td>
-<td align="left">integer</td>
-<td align="left">1</td>
-</tr>
-<tr class="odd">
-<td align="left">tmin_c</td>
-<td align="left">numeric</td>
-<td align="left">-6.6</td>
-</tr>
-<tr class="even">
-<td align="left">tmax_c</td>
-<td align="left">numeric</td>
-<td align="left">1.6</td>
-</tr>
-<tr class="odd">
-<td align="left">tavg_c</td>
-<td align="left">numeric</td>
-<td align="left">-2.5</td>
-</tr>
-<tr class="even">
-<td align="left">rain_mm</td>
-<td align="left">numeric</td>
-<td align="left">0.2</td>
-</tr>
-<tr class="odd">
-<td align="left">precip_mm</td>
-<td align="left">numeric</td>
-<td align="left">2</td>
-</tr>
-<tr class="even">
-<td align="left">snow_cm</td>
-<td align="left">numeric</td>
-<td align="left">1.8</td>
-</tr>
-<tr class="odd">
-<td align="left">Station.Name</td>
-<td align="left">character</td>
-<td align="left">ST JOHN’S A</td>
-</tr>
-<tr class="even">
-<td align="left">Climate.ID</td>
-<td align="left">numeric</td>
-<td align="left">8403506</td>
-</tr>
-<tr class="odd">
-<td align="left">station</td>
-<td align="left">character</td>
-<td align="left">ST JOHN’S A</td>
-</tr>
-</tbody>
-</table>
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="quick-rainfall-exploration">Quick rainfall exploration<a class="anchor" aria-label="anchor" href="#quick-rainfall-exploration"></a>
+<h3 id="quick-rainfall-visualization">Quick rainfall visualization<a class="anchor" aria-label="anchor" href="#quick-rainfall-visualization"></a>
 </h3>
-<p>Use the package helper (works out of the box):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rainfall.html">plot_rainfall</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting-started_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
-<p>Or compute monthly rainfall yourself (robust to different column
-names):</p>
+<p>To facet by year:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># try to detect date and rainfall columns</span></span>
-<span><span class="va">date_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"date"</span>,  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, ignore.case<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">rain_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"rain|precip"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, ignore.case<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">date_col</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">rain_col</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">df</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">..date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[[</span><span class="va">date_col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">..rain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[[</span><span class="va">rain_col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">ym</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">..date</span>, <span class="st">"%Y-%m"</span><span class="op">)</span>          <span class="co"># &lt;-- make a real column</span></span>
-<span></span>
-<span>  <span class="va">mon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">..rain</span> <span class="op">~</span> <span class="va">ym</span>, <span class="va">dat</span>, <span class="va">sum</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mon</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year_month"</span>, <span class="st">"rain_mm"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mon</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">mon</span><span class="op">$</span><span class="va">year_month</span>, <span class="st">"-01"</span><span class="op">)</span><span class="op">)</span>, <span class="va">mon</span><span class="op">$</span><span class="va">rain_mm</span>, type<span class="op">=</span><span class="st">"h"</span>, lwd<span class="op">=</span><span class="fl">4</span>,</span>
-<span>       xlab <span class="op">=</span> <span class="st">"Month"</span>, ylab <span class="op">=</span> <span class="st">"Total rainfall (mm)"</span>,</span>
-<span>       main <span class="op">=</span> <span class="st">"Monthly rainfall totals"</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Could not auto-detect date/rain columns."</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rainfall.html">plot_rainfall</a></span><span class="op">(</span><span class="va">df</span>, facet_by_year <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting-started_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 </div>
 <div class="section level3">
-<h3 id="temperature-overview-if-columns-exist">Temperature overview (if columns exist)<a class="anchor" aria-label="anchor" href="#temperature-overview-if-columns-exist"></a>
+<h3 id="exploring-rainfall-summaries">Exploring rainfall summaries<a class="anchor" aria-label="anchor" href="#exploring-rainfall-summaries"></a>
 </h3>
+<p>Monthly rainfall totals</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Attempt to detect temperature columns</span></span>
-<span><span class="va">nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="va">nms</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"tmax|temp_max|max"</span>, <span class="va">nms</span>, ignore.case<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="va">nms</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"tmin|temp_min|min"</span>, <span class="va">nms</span>, ignore.case<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">tmean</span> <span class="op">&lt;-</span> <span class="va">nms</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"tmean|temp_mean|mean"</span>, <span class="va">nms</span>, ignore.case<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">date_col</span> <span class="op">&lt;-</span> <span class="va">nms</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="va">nms</span>, ignore.case<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">date_col</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">tmean</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">tmax</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">tmin</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">df</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">..date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[[</span><span class="va">date_col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">tmean</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">dat</span><span class="op">$</span><span class="va">..tmean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[[</span><span class="va">tmax</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[[</span><span class="va">tmin</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="va">dat</span><span class="op">$</span><span class="va">..tmean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[[</span><span class="va">tmean</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">ym</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">..date</span>, <span class="st">"%Y-%m"</span><span class="op">)</span>         <span class="co"># &lt;-- real column</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">monT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">..tmean</span> <span class="op">~</span> <span class="va">ym</span>, <span class="va">dat</span>, <span class="va">mean</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">monT</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year_month"</span>, <span class="st">"tmean_C"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">monT</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">monT</span><span class="op">$</span><span class="va">year_month</span>, <span class="st">"-01"</span><span class="op">)</span><span class="op">)</span>, <span class="va">monT</span><span class="op">$</span><span class="va">tmean_C</span>, type<span class="op">=</span><span class="st">"l"</span>, lwd<span class="op">=</span><span class="fl">2</span>,</span>
-<span>       xlab <span class="op">=</span> <span class="st">"Month"</span>, ylab <span class="op">=</span> <span class="st">"Mean temperature (°C)"</span>,</span>
-<span>       main <span class="op">=</span> <span class="st">"Monthly mean temperature"</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Could not auto-detect temperature columns."</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><img src="getting-started_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
-<p>Export photoperiod for modeling</p>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarise_rainfall_monthly.html">summarise_rainfall_monthly</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;    Year Month Rain_mm</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">2</span>008     1    75.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">2</span>008     2    70.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">2</span>008     3   103. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">2</span>008     4   105  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">2</span>008     5   119. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>  <span style="text-decoration: underline;">2</span>008     6   129.</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="exporting-data">Exporting data<a class="anchor" aria-label="anchor" href="#exporting-data"></a>
+</h3>
+<p>Save any computed or fitted data to CSV for modeling or sharing:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"photoperiod_st_johns_2024.csv"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">pp_nl</span>, <span class="va">out_file</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out_file</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmp35B55Y/photoperiod_st_johns_2024.csv"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpmIcf1Q/photoperiod_st_johns_2024.csv"</span></span></code></pre></div>
 <blockquote>
-<p>The file is written to a temporary folder during vignette build.
-Replace tempdir() with your project path in real workflows.
-<strong>Reference</strong><br>
-Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., &amp; Schoolfield,
-R. M. (1995).<br><em>A model comparison for daylength as a function of latitude and day
-of year.</em> Ecological Modelling, 80, 87–95.</p>
+<p>The file is written to a temporary directory during vignette build.
+Replace tempdir() with your project path in real workflows.</p>
 </blockquote>
 </div>
 <div class="section level3">
 <h3 id="seasonal-climatology-sinusoidal-fits">Seasonal climatology: sinusoidal fits<a class="anchor" aria-label="anchor" href="#seasonal-climatology-sinusoidal-fits"></a>
 </h3>
+<p>The function <code><a href="../reference/fit_seasonal_temp.html">fit_seasonal_temp()</a></code> estimates smooth
+seasonal temperature cycles using sinusoidal functions (e.g., sin1,
+sin2).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbaafi/climecol" class="external-link">climecol</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
-<span><span class="va">fit_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span><span class="va">weather_nl</span>, funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fit_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_seasonal_temp.html">fit_seasonal_temp</a></span><span class="op">(</span><span class="va">weather_nl</span>, funcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sin1"</span>,<span class="st">"sin2"</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">fit_out</span><span class="op">$</span><span class="va">metrics</span>, digits <span class="op">=</span> <span class="fl">3</span>, caption <span class="op">=</span> <span class="st">"Model comparison by AIC and R²"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -382,17 +273,12 @@ of year.</em> Ecological Modelling, 80, 87–95.</p>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">fit_out</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span><span class="op">)</span> <span class="va">fit_out</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="getting-started_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="extending-seasonal-temperature-fitting-with-custom-models">Extending seasonal temperature fitting with custom models<a class="anchor" aria-label="anchor" href="#extending-seasonal-temperature-fitting-with-custom-models"></a>
-</h2>
-<p>The function <code><a href="../reference/fit_seasonal_temp.html">fit_seasonal_temp()</a></code> supports user-defined
-formulas. This is useful when you want to test functional forms beyond
-the built-in sinusoidal models.</p>
-<p>For example, suppose we define our custom function:</p>
+<div class="section level3">
+<h3 id="extending-temperature-fits-with-custom-models">Extending temperature fits with custom models<a class="anchor" aria-label="anchor" href="#extending-temperature-fits-with-custom-models"></a>
+</h3>
+<p>You can also define your own models using nonlinear formulas.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Standardize column names</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># Standardize column names</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_weather_names.html">normalize_weather_names</a></span><span class="op">(</span><span class="va">weather_nl</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Define your custom model (formula uses mean_temp ~ ... and day_of_year)</span></span>
@@ -411,7 +297,7 @@ the built-in sinusoidal models.</p>
 <span>  plot   <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 5) Results</span></span>
+<span><span class="co"># Results</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">metrics</span>   <span class="co"># AIC and R2 per model</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 3</span></span></span>
 <span><span class="co">#&gt;   model   AIC    R2</span></span>
@@ -420,12 +306,12 @@ the built-in sinusoidal models.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> quad  <span style="text-decoration: underline;">1</span>984. 0.758</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">plot</span>      <span class="co"># overlay plot</span></span></code></pre></div>
 <p><img src="getting-started_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
+</div>
 <div class="section level3">
 <h3 id="seasonal-photoperiod-fitting">Seasonal photoperiod fitting<a class="anchor" aria-label="anchor" href="#seasonal-photoperiod-fitting"></a>
 </h3>
-<p>We can estimate a smooth periodic curve of photoperiod (hours of
-daylight) by averaging day-of-year across multiple years, and then
-fitting simple sinusoidal functions using nonlinear least squares.</p>
+<p>Analogously, you can fit smooth periodic functions to average
+daylength:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_seasonal_photo.html">fit_seasonal_photo</a></span><span class="op">(</span></span>
 <span>  location <span class="op">=</span> <span class="st">"St John's"</span>,</span>
@@ -441,8 +327,7 @@ fitting simple sinusoidal functions using nonlinear least squares.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> sin2  -<span style="color: #BB0000;">943.</span> 0.999</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="getting-started_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
-<p>Custom models are also supported by passing a named list of formula
-and start:</p>
+<p>Custom models are also supported:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_custom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_seasonal_photo.html">fit_seasonal_photo</a></span><span class="op">(</span></span>
 <span>  location <span class="op">=</span> <span class="st">"St John's"</span>,</span>
@@ -461,7 +346,92 @@ and start:</p>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> sin1  -<span style="color: #BB0000;">934.</span> 0.999</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> cos1   495. 0.967</span></span></code></pre></div>
-<p>Session info</p>
+</div>
+<div class="section level3">
+<h3 id="key-functions-at-a-glance">Key functions at a glance<a class="anchor" aria-label="anchor" href="#key-functions-at-a-glance"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="34%">
+<col width="34%">
+<col width="31%">
+</colgroup>
+<thead><tr class="header">
+<th>Category</th>
+<th>Function</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Import / Validation</strong></td>
+<td>
+<code><a href="../reference/read_weather_csv.html">read_weather_csv()</a></code>,
+<code><a href="../reference/validate_weather.html">validate_weather()</a></code>
+</td>
+<td>Read and quality-check weather data</td>
+</tr>
+<tr class="even">
+<td><strong>Standardization</strong></td>
+<td><code><a href="../reference/normalize_weather_names.html">normalize_weather_names()</a></code></td>
+<td>Harmonize column names across datasets</td>
+</tr>
+<tr class="odd">
+<td><strong>Gap handling</strong></td>
+<td>
+<code><a href="../reference/complete_daily_calendar.html">complete_daily_calendar()</a></code>,
+<code><a href="../reference/summarise_gaps.html">summarise_gaps()</a></code>, <code><a href="../reference/impute_weather.html">impute_weather()</a></code>
+</td>
+<td>Detect and fill missing dates/values</td>
+</tr>
+<tr class="even">
+<td><strong>Photoperiod</strong></td>
+<td>
+<code><a href="../reference/daylength_f95.html">daylength_f95()</a></code>, <code><a href="../reference/photoperiod_year.html">photoperiod_year()</a></code>,
+<code><a href="../reference/photoperiod_sites.html">photoperiod_sites()</a></code>
+</td>
+<td>Compute daylight hours from date and latitude</td>
+</tr>
+<tr class="odd">
+<td><strong>Climate fitting</strong></td>
+<td>
+<code><a href="../reference/fit_seasonal_temp.html">fit_seasonal_temp()</a></code>,
+<code><a href="../reference/fit_seasonal_photo.html">fit_seasonal_photo()</a></code>
+</td>
+<td>Fit sinusoidal seasonal models for temperature or daylength</td>
+</tr>
+<tr class="even">
+<td><strong>Rainfall simulation</strong></td>
+<td>
+<code><a href="../reference/sample_rainfall_by_month.html">sample_rainfall_by_month()</a></code>,
+<code><a href="../reference/simulate_rainfall_scenarios.html">simulate_rainfall_scenarios()</a></code>
+</td>
+<td>Generate stochastic rainfall or scenario time series</td>
+</tr>
+<tr class="odd">
+<td><strong>Visualization</strong></td>
+<td><code><a href="../reference/plot_rainfall.html">plot_rainfall()</a></code></td>
+<td>Plot daily or multi-year rainfall with optional yearly facets</td>
+</tr>
+<tr class="even">
+<td><strong>Export</strong></td>
+<td><code><a href="../reference/export_weather.html">export_weather()</a></code></td>
+<td>Save validated or imputed data to CSV for modeling</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<blockquote>
+<p>Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., &amp;
+Schoolfield, R. M. (1995).<br><em>A model comparison for daylength as a function of latitude and day
+of year.</em> Ecological Modelling, 80, 87–95.</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h3>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>

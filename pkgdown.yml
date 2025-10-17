@@ -3,11 +3,13 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   export_weather: export_weather.html
+  gaps-and-imputation: gaps-and-imputation.html
   getting-started: getting-started.html
   import-and-qa-weather: import-and-qa-weather.html
+  photoperiod-modeling: photoperiod-modeling.html
   seasonal-climate-fits: seasonal-climate-fits.html
   stochastic_rainfall: stochastic_rainfall.html
-last_built: 2025-10-16T19:48Z
+last_built: 2025-10-17T01:39Z
 urls:
   reference: https://jbaafi.github.io/climecol/reference
   article: https://jbaafi.github.io/climecol/articles
