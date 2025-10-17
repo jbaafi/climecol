@@ -16,47 +16,55 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Why `climecol`?
+# Why climecol?
 
-`climecol` helps you archive, explore, and use climate/weather data in ecological and infectious-disease models:
+`climecol` provides a lightweight, reproducible workflow for archiving, analyzing, and visualizing weather and climate data in ecological and infectious-disease modeling contexts.
 
- - Ships example daily weather data (Newfoundland) so you can prototype fast.
+It includes:
 
- - Provides photoperiod (daylength) functions (no dependencies) for seasonal drivers.
+- Curated daily weather data (Newfoundland example dataset)
+- Fast, dependency-free photoperiod (daylength) functions
+- Simple tools for quality checks, gap handling, and plotting
+- Functions designed for offline and reproducible pipelines
 
- - Includes simple plotting/helpers for quick QA and communication.
-
- - Designed for reproducible workflows (works offline, CI-friendly).
-
-### Installation
+## Installation
 
 ```{r, eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("jbaafi/climecol")
 ```
 
-Load the package:
+Then load the package:
 
 ```{r}
 library(climecol)
 ```
 
-### Loading Data
+## Loading and validating weather data
+
+You can import and validate your weather data from a .csv file as follows:
 
 ```{r, eval=FALSE}
 wx <- read_weather_csv("data-raw/combined_data.csv")
 wx <- normalize_weather_names(wx)
+
 qa <- validate_weather(wx, temp_bounds = c(-50, 50), rain_max = 150, snow_max = 60)
 qa$summary
 
 ```
 
+The validate_weather() summary reports:
 
-### Photoperiod (daylength)
+- record span (span_start, span_end)
+- missing days, out-of-bounds temperature values
+- and unrealistic rainfall/snow totals flagged during checks.
 
-The photoperiod helpers implement a standard solar-geometry approximation (Forsythe et al., 1995) and return hours of daylight from date and latitude (timezone/longitude not required).
 
-Daily photoperiod for a site
+## Photoperiod (daylength)
+
+The package implements the Forsythe et al. (1995) solar-geometry approximation to compute daylength (in hours) using only date and latitude, no timezone or longitude required.
+
+Example: daily photoperiod
 
 ```{r}
 pp_nl <- photoperiod_year(2024, location = "St John's")
@@ -76,111 +84,66 @@ Monthly means and multi-site comparison
 ```{r}
 pp_nl_m <- photoperiod_year(2024, location = "St John's",  aggregate = "month")
 pp_nb_m <- photoperiod_year(2024, location = "Saint John", aggregate = "month")
-head(pp_nl_m); head(pp_nb_m)
+head(pp_nl_m)
+head(pp_nb_m)
 ```
 
-> Keys are matched case-insensitively; punctuation/spacing ignored.  
-> `"St John's"`, `"st_johns"`, `"St.Johns"` → `st_johns` (NL); `"Saint John"` / `"st john"` → `saint_john` (NB).  
-> If you pass `lat` without `location`, results are labeled `lat_<value>`.
+> Tip: Site names are case-insensitive and punctuation-agnostic.
 
-### Built-in weather data (temperature & rainfall)
-`climecol` ships a Newfoundland daily weather dataset for examples and testing.
+> `"St John's"`, `"st_johns"`, `"St.Johns"` → `st_johns` (NL); 
+`"Saint John"` / `"st john"` → `saint_john` (NB).  
+
+> If you provide a numeric latitude instead of location, results are labeled lat_<value>.
+
+
+## Example dataset: Newfoundland (2008–2023)
+
+`climecol` ships daily weather dataset for Newfoundland and Labrador.
 
 ```{r}
+data(weather_nl)
+
 library(dplyr)
-
-# Start from the shipped dataset
-df <- weather_nl
-
-# Normalize names to the climecol API
-df <- normalize_weather_names(df)
-
-glimpse(df)
+glimpse(weather_nl)
 ```
 
-Columns and types
+Normalize column names for consistency:
 
 ```{r}
-cols <- data.frame(
-  column = names(df),
-  class  = vapply(df, function(x) paste(class(x), collapse="/"), character(1)),
-  example = vapply(df, function(x) {
-    i <- which(!is.na(x))[1]; if (length(i) == 0L) NA_character_ else as.character(x[i])
-  }, character(1)),
-  row.names = NULL
-)
-knitr::kable(cols, caption = "Columns in `df` with example values")
-
+df <- normalize_weather_names(weather_nl)
 ```
 
-### Quick rainfall exploration
 
-Use the package helper (works out of the box):
+## Quick rainfall visualization
 
 ```{r}
 plot_rainfall(df)
 ```
 
-Or compute monthly rainfall yourself (robust to different column names):
+To facet by year:
 
 ```{r}
-# try to detect date and rainfall columns
-date_col <- names(df)[grepl("date",  names(df), ignore.case=TRUE)][1]
-rain_col <- names(df)[grepl("rain|precip", names(df), ignore.case=TRUE)][1]
-
-if (!is.na(date_col) && !is.na(rain_col)) {
-  dat <- df
-  dat$..date <- as.Date(dat[[date_col]])
-  dat$..rain <- as.numeric(dat[[rain_col]])
-  dat$ym <- format(dat$..date, "%Y-%m")          # <-- make a real column
-
-  mon <- aggregate(..rain ~ ym, dat, sum, na.rm = TRUE)
-  names(mon) <- c("year_month", "rain_mm")
-  head(mon)
-
-  plot(as.Date(paste0(mon$year_month, "-01")), mon$rain_mm, type="h", lwd=4,
-       xlab = "Month", ylab = "Total rainfall (mm)",
-       main = "Monthly rainfall totals")
-} else {
-  message("Could not auto-detect date/rain columns.")
-}
-
+plot_rainfall(df, facet_by_year = TRUE)
 ```
 
-### Temperature overview (if columns exist)
+
+## Exploring rainfall summaries
+
+Monthly rainfall totals
 
 ```{r}
-# Attempt to detect temperature columns
-nms <- names(df)
-tmax <- nms[grepl("tmax|temp_max|max", nms, ignore.case=TRUE)][1]
-tmin <- nms[grepl("tmin|temp_min|min", nms, ignore.case=TRUE)][1]
-tmean <- nms[grepl("tmean|temp_mean|mean", nms, ignore.case=TRUE)][1]
-date_col <- nms[grepl("date", nms, ignore.case=TRUE)][1]
+library(dplyr)
 
-if (!is.na(date_col) && (!is.na(tmean) || (!is.na(tmax) && !is.na(tmin)))) {
-  dat <- df
-  dat$..date <- as.Date(dat[[date_col]])
-  if (is.na(tmean)) {
-    dat$..tmean <- rowMeans(cbind(as.numeric(dat[[tmax]]), as.numeric(dat[[tmin]])), na.rm = TRUE)
-  } else {
-    dat$..tmean <- as.numeric(dat[[tmean]])
-  }
-  dat$ym <- format(dat$..date, "%Y-%m")         # <-- real column
+df <- normalize_weather_names(weather_nl)
 
-  monT <- aggregate(..tmean ~ ym, dat, mean, na.rm = TRUE)
-  names(monT) <- c("year_month", "tmean_C")
-  head(monT)
-
-  plot(as.Date(paste0(monT$year_month, "-01")), monT$tmean_C, type="l", lwd=2,
-       xlab = "Month", ylab = "Mean temperature (°C)",
-       main = "Monthly mean temperature")
-} else {
-  message("Could not auto-detect temperature columns.")
-}
-
+df <- summarise_rainfall_monthly(df)
+head(df)
 ```
 
-Export photoperiod for modeling
+
+## Exporting data
+
+Save any computed or fitted data to CSV for modeling or sharing:
 
 ```{r}
 out_file <- file.path(tempdir(), "photoperiod_st_johns_2024.csv")
@@ -188,18 +151,14 @@ write.csv(pp_nl, out_file, row.names = FALSE)
 out_file
 ```
 
-> The file is written to a temporary folder during vignette build. Replace tempdir() with your project path in real workflows.
-> **Reference**  
-> Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., & Schoolfield, R. M. (1995).  
-> *A model comparison for daylength as a function of latitude and day of year.* Ecological Modelling, 80, 87–95.
+> The file is written to a temporary directory during vignette build. Replace tempdir() with your project path in real workflows.
 
 
-### Seasonal climatology: sinusoidal fits
+## Seasonal climatology: sinusoidal fits
+
+The function `fit_seasonal_temp()` estimates smooth seasonal temperature cycles using sinusoidal functions (e.g., sin1, sin2).
 
 ```{r}
-library(climecol)
-
-data(weather_nl)
 fit_out <- fit_seasonal_temp(weather_nl, funcs = c("sin1","sin2"), plot = TRUE)
 
 knitr::kable(fit_out$metrics, digits = 3, caption = "Model comparison by AIC and R²")
@@ -208,17 +167,12 @@ if (!is.null(fit_out$plot)) fit_out$plot
 ```
 
 
-## Extending seasonal temperature fitting with custom models
+## Extending temperature fits with custom models
 
-The function `fit_seasonal_temp()` supports user-defined formulas. 
-This is useful when you want to test functional forms beyond the built-in
-sinusoidal models.
-
-For example, suppose we define our custom function:
+You can also define your own models using nonlinear formulas.
 
 ```{r}
-#Standardize column names
-
+# Standardize column names
 df <- normalize_weather_names(weather_nl)
 
 # Define your custom model (formula uses mean_temp ~ ... and day_of_year)
@@ -237,18 +191,15 @@ res <- fit_seasonal_temp(
   plot   = TRUE
 )
 
-# 5) Results
+# Results
 res$metrics   # AIC and R2 per model
 res$plot      # overlay plot
-
 ```
 
 
-### Seasonal photoperiod fitting
+## Seasonal photoperiod fitting
 
-We can estimate a smooth periodic curve of photoperiod (hours of daylight) by
-averaging day-of-year across multiple years, and then fitting simple sinusoidal
-functions using nonlinear least squares.
+Analogously, you can fit smooth periodic functions to average daylength:
 
 ```{r}
 res <- fit_seasonal_photo(
@@ -261,7 +212,7 @@ res$metrics
 res$plot
 ```
 
-Custom models are also supported by passing a named list of formula and start:
+Custom models are also supported:
 
 ```{r}
 res_custom <- fit_seasonal_photo(
@@ -279,9 +230,26 @@ res_custom$metrics
 ```
 
 
+## Key functions at a glance
+
+| Category | Function | Purpose |
+|-----------|-----------|----------|
+| **Import / Validation** | `read_weather_csv()`, `validate_weather()` | Read and quality-check weather data |
+| **Standardization** | `normalize_weather_names()` | Harmonize column names across datasets |
+| **Gap handling** | `complete_daily_calendar()`, `summarise_gaps()`, `impute_weather()` | Detect and fill missing dates/values |
+| **Photoperiod** | `daylength_f95()`, `photoperiod_year()`, `photoperiod_sites()` | Compute daylight hours from date and latitude |
+| **Climate fitting** | `fit_seasonal_temp()`, `fit_seasonal_photo()` | Fit sinusoidal seasonal models for temperature or daylength |
+| **Rainfall simulation** | `sample_rainfall_by_month()`, `simulate_rainfall_scenarios()` | Generate stochastic rainfall or scenario time series |
+| **Visualization** | `plot_rainfall()` | Plot daily or multi-year rainfall with optional yearly facets |
+| **Export** | `export_weather()` | Save validated or imputed data to CSV for modeling |
 
 
-Session info
+## References
+
+> Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., & Schoolfield, R. M. (1995).  
+> *A model comparison for daylength as a function of latitude and day of year.* Ecological Modelling, 80, 87–95.
+
+## Session info
 
 ```{r session-info, eval=FALSE}
 sessionInfo()

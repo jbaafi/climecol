@@ -1,0 +1,19 @@
+---
+title: "Gaps and imputation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{gaps-and-imputation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(climecol)
+```

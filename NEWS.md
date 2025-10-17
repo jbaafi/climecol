@@ -1,3 +1,11 @@
+# climecol 0.2.0
+
+## New vignettes and documentation updates
+- Added `vignettes/photoperiod-modeling.Rmd`
+- Improved pkgdown structure (harmonized articles and reference categories)
+- Polished “Getting started” vignette with clearer workflow examples
+- Enhanced function documentation and testing consistency
+
 # climecol 0.1.9
 
 ### New vignette: Exporting Processed Weather Data

@@ -1,0 +1,195 @@
+---
+title: "Photoperiod modeling"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{photoperiod-modeling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, fig.height = 4.2,
+  message = FALSE, warning = FALSE
+)
+```
+
+```{r setup}
+library(climecol)
+```
+
+## Overview
+
+This vignette shows how to compute and use photoperiod (daylength) with
+`climecol`. Functions are dependency-free and based on a standard
+solar-geometry approximation (Forsythe et al., 1995), returning hours of daylight
+from date and latitude only (timezone/longitude not required).
+
+You can work by latitude or by location keys (built-in sites).
+
+
+## Core functions:
+
+- `daylength_f95(date, lat)` — vectorized daylength (hours) for any dates & latitude
+- `photoperiod_year(year, lat = NULL, location = NULL, aggregate = c("none","month"))` — daily or monthly photoperiod table for a given year
+- `photoperiod_sites()` — named vector of built-in site latitudes (case/spacing/punctuation agnostic lookup)
+
+
+## Quick start: daily photoperiod by location
+
+Compute daily photoperiod for St. John’s, NL (built-in key) for 2024:
+
+```{r}
+pp_nl <- photoperiod_year(2024, location = "St John's")
+head(pp_nl)
+```
+
+Plot the annual cycle:
+
+```{r}
+plot(pp_nl$date, pp_nl$daylength_hours, type = "l", lwd = 2,
+     xlab = "Date", ylab = "Daylength (hours)",
+     main = "Photoperiod — St. John's, NL (2024)")
+```
+
+Monthly means:
+
+```{r}
+pp_nl_m <- photoperiod_year(2024, location = "St John's", aggregate = "month")
+pp_nl_m
+```
+
+By latitude (no location key)
+
+You can compute daylength directly from latitude. Here’s 47.56°N (St. John’s latitude):
+
+```{r}
+pp_lat <- photoperiod_year(2024, lat = 47.56)
+head(pp_lat, 3)
+```
+
+Or call daylength_f95() for arbitrary dates:
+
+```{r}
+dates <- as.Date("2024-06-15") + 0:6
+daylength_f95(dates, lat = 47.56)
+```
+
+
+## Built-in sites and normalization
+
+`photoperiod_sites()` lists the convenience keys. The location matching is forgiving:
+
+"St John's", "st_johns", "St.Johns" all resolve to st_johns. Likewise
+"Saint John" / "st john" resolve to saint_john.
+
+```{r}
+photoperiod_sites()
+```
+
+Compare St. John’s (NL) vs Saint John (NB) monthly means:
+
+```{r}
+pp_nl_m <- photoperiod_year(2024, location = "St John's",  aggregate = "month")
+pp_nb_m <- photoperiod_year(2024, location = "Saint John", aggregate = "month")
+
+merge(pp_nl_m[, c("date","daylength_hours")],
+      pp_nb_m[, c("date","daylength_hours")],
+      by = "date", suffixes = c("_NL","_NB"))
+```
+
+
+## Fitting a smooth seasonal curve to photoperiod
+
+`fit_seasonal_photo()` aggregates day-of-year across years and fits simple periodic
+models (nonlinear least squares). You can use built-ins ("sin1", "sin2")
+and/or supply custom formulas.
+
+```{r}
+fit <- fit_seasonal_photo(
+  location = "St John's",
+  years = c(2023, 2024),
+  funcs = c("sin1","sin2"),
+  plot = TRUE
+)
+
+fit$metrics
+if (!is.null(fit$plot)) fit$plot
+```
+
+Custom model example
+
+Define a cosine form and pass via custom:
+
+```{r}
+fit_custom <- fit_seasonal_photo(
+  location = "St John's",
+  years = c(2023, 2024),
+  funcs = "sin1",
+  custom = list(
+    cos1 = list(
+      formula = avg_photo ~ a + b * cos(2*pi*day_of_year/365),
+      start   = list(a = 12, b = 6)
+    )
+  ),
+  plot = TRUE
+)
+
+fit_custom$metrics
+if (!is.null(fit_custom$plot)) fit_custom$plot
+```
+
+## Exporting photoperiod for modeling
+
+Use `export_weather()` (adds metadata header) if you want
+self-describing files.
+
+```{r}
+out_csv <- file.path(tempdir(), "photoperiod_st_johns_2024.csv")
+write.csv(pp_nl, out_csv, row.names = FALSE)
+out_csv
+```
+
+During vignette build we write to a temp directory. In your projects,
+write to your data folder (e.g., data/derived/…).
+
+
+## Notes & limitations
+
+- Formula follows Forsythe et al. (1995) with standard sunrise/sunset refraction correction (-0.833°); suitable for most ecological modeling use-cases.
+- Returns geometric daylength; ignores terrain shading, civil/nautical twilight, and atmospheric variability.
+- If you pass lat (no location), the output uses a location label like lat_47.56 for clarity.
+
+
+## References
+
+> Forsythe, W. C., Rykiel, E. J., Stahl, R. S., Wu, H., & Schoolfield, R. M. (1995).  
+> *A model comparison for daylength as a function of latitude and day of year.* Ecological Modelling, 80, 87–95.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	

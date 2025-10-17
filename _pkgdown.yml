@@ -34,60 +34,85 @@ navbar:
       aria-label: "GitHub repository"
 
 articles:
-  - title: Getting started
+  - title: Getting Started
+    desc: "A quick introduction to climecol’s workflow: importing, validating, and exploring weather data."
     contents:
       - getting-started
 
-  - title: Guides
+  - title: Import & Quality Assurance
+    desc: "How to read, standardize, and validate weather datasets for modeling and analysis."
     contents:
       - import-and-qa-weather
 
-  - title: Seasonal Climate Fits
+  - title: Data Gaps & Imputation
+    desc: "Identify missing days, summarize gaps, and apply simple imputation methods for complete time series."
+    contents:
+      - gaps-and-imputation
+
+  - title: Climate Seasonality & Fits
+    desc: "Fit periodic models to temperature and photoperiod data to describe seasonal dynamics."
     contents:
       - seasonal-climate-fits
 
-  - title: Stochastic Daily Rainfall Sampling
+  - title: Photoperiod Modeling
+    desc: "Compute daily or monthly daylight hours from latitude or built-in locations using Forsythe et al. (1995)."
+    contents:
+      - photoperiod-modeling
+
+  - title: Stochastic Rainfall Sampling
+    desc: "Generate rainfall scenarios that preserve seasonal structure for use in ecological or population models."
     contents:
       - stochastic_rainfall
 
-  - title: Data Export
+  - title: Exporting Weather Data
+    desc: "Save processed weather datasets and QA results with metadata for reproducible research."
     contents:
       - export_weather
 
 reference:
-  - title: Import & QA
+  - title: Import & Standardization
+    desc: "Functions for reading, validating, and harmonizing raw weather data."
     contents:
       - read_weather_csv
       - normalize_weather_names
       - default_weather_mapping
       - validate_weather
 
-  - title: Gaps & Imputation
+  - title: Data Gaps & Imputation
+    desc: "Utilities for identifying, summarizing, and filling missing daily records."
     contents:
       - complete_daily_calendar
       - summarise_gaps
       - impute_weather
 
-  - title: Summaries & Seasonal Fits
+  - title: Climate Summaries & Seasonal Patterns
+    desc: "Helpers for summarizing rainfall, plotting data, and fitting smooth seasonal models."
     contents:
       - summarise_rainfall_monthly
       - plot_rainfall
       - fit_seasonal_temp
       - fit_seasonal_photo
+
+  - title: Stochastic Sampling & Scenario Simulation
+    desc: "Tools to generate synthetic rainfall or temperature-shift scenarios for modeling workflows."
+    contents:
       - sample_rainfall_by_month
       - simulate_temp_shifts
       - simulate_rainfall_scenarios
 
-  - title: Photoperiod
+  - title: Photoperiod (Daylength)
+    desc: "Compute daily or monthly daylight duration from date and latitude using Forsythe et al. (1995)."
     contents:
       - daylength_f95
       - photoperiod_year
       - photoperiod_sites
 
-  - title: Data export and reproducibility
+  - title: Export & Reproducibility
+    desc: "Save standardized or imputed datasets with embedded metadata for traceable workflows."
     contents:
       - export_weather
 
-  - title: Shipped Data
+  - title: Example Data
+    desc: "Shipped dataset for Newfoundland & Labrador (2008–2023)."
     contents:
       - weather_nl
